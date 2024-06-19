@@ -51,5 +51,13 @@ class UserRepositoryTest {
 
     }
 
+    @Test
+    void testfindByUsername() {
+        User user = new User("user1");
 
+        userRepository.save(user);
+
+        User foundUser = userRepository.findByUsername("user1");
+        System.out.println("test >>>>>> user : " + foundUser.getUsername());
+    }
 }

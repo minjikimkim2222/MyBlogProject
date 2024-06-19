@@ -21,6 +21,7 @@ public class UserService {
         return repository.save(user); // User 없다면 insert, 있다면 update
     }
 
+
     /*
         CRUD 기타 비즈니스 로직 모음
      */
@@ -34,7 +35,20 @@ public class UserService {
         return repository.existsByUsername(username);
     }
 
+    // 이메일 중복 검사
     public boolean isEmailDuplicate(String email){
         return repository.existsByEmail(email);
+    }
+
+    // 로그인 성공 여부
+    public boolean login(String username, String password){
+        // 데이터베이스에서 사용자 정보를 조회하고 + 비밀번호가 일치하면, 로그인 성공!
+        User foundUser = repository.findByUsername(username);
+
+        if (foundUser != null && foundUser.getPassword().equals(password)) {
+            return true; // 로그인 성공
+        }
+
+        return false; // 로그인 실패
     }
 }
