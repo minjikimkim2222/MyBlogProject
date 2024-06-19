@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Login</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .field-error {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" th:href="@{/myblog}" th:text="myblog">플랫폼이름</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/loginform}" th:text="로그인">로그인</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">내 벨로그</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Register Form -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title text-center">회원가입</h3>
+
+                    <form method="post" th:action th:object="${userRegisterDTO}">
+
+                        <!-- 필드 에러 아니고, 글로벌 에러 체크 -->
+                        <div th:if="${#fields.hasGlobalErrors()}">
+                            <p class="field-error" th:each="err : ${#fields.globalErrors()}"
+                                th:text="${err}">전체 오류 메세지</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="username"></label>
+                            <input type="text" id="username" th:field="*{username}"
+                                   class="form-control"
+                                   placeholder="아이디">
+                            <div class="field-error" th:errors="*{username}">
+                                상품명 오류
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="password"></label>
+                            <input type="password" id="password" th:field="*{password}"
+                                   class="form-control"
+                                   placeholder="암호">
+                            <div class="field-error" th:errors="*{password}">
+                                상품명 오류
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="password-check"></label>
+                            <input type="password" id="password-check" th:field="*{passwordCheck}"
+                                   class="form-control"
+                                   placeholder="암호 확인">
+                            <div class="field-error" th:errors="*{passwordCheck}">
+                                상품명 오류
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="name"></label>
+                            <input type="text" id="name" th:field="*{name}"
+                                   class="form-control"
+                                   placeholder="이름">
+                            <div class="field-error" th:errors="*{name}">
+                                상품명 오류
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email"></label>
+                            <input type="email" id="email" th:field="*{email}"
+                                   class="form-control"
+                                   placeholder="이메일">
+                            <div class="field-error" th:errors="*{email}">
+                                상품명 오류
+                            </div>
+                        </div>
+                        <input class="btn btn-secondary btn-block" type="submit" value="회원가입">
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

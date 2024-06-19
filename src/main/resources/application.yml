@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: velog
+
+  datasource:
+    url: jdbc:mysql://localhost:3307/velogDB
+    username: minjiki2
+    password: minjiki1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  messages:
+    basename: messages, errors
