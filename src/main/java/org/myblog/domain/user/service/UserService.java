@@ -2,6 +2,7 @@ package org.myblog.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.myblog.domain.user.domain.User;
+import org.myblog.domain.user.dto.UserLoginForm;
 import org.myblog.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,10 @@ public class UserService {
         return repository.save(user); // User 없다면 insert, 있다면 update
     }
 
+    @Transactional(readOnly = true)
+    public User findByUsername(String username) {
+        return repository.findByUsername(username);
+    }
 
     /*
         CRUD 기타 비즈니스 로직 모음
@@ -41,14 +46,18 @@ public class UserService {
     }
 
     // 로그인 성공 여부
-    public boolean login(String username, String password){
+    public UserLoginForm login(String username, String password){
         // 데이터베이스에서 사용자 정보를 조회하고 + 비밀번호가 일치하면, 로그인 성공!
         User foundUser = repository.findByUsername(username);
 
         if (foundUser != null && foundUser.getPassword().equals(password)) {
-            return true; // 로그인 성공
+            UserLoginForm userLoginForm = new UserLoginForm();
+            userLoginForm.setUsername(foundUser.getUsername());
+            userLoginForm.setPassword(foundUser.getPassword());
+
+            return userLoginForm; // 로그인 성공
         }
 
-        return false; // 로그인 실패
+        return null; // 로그인 실패
     }
 }

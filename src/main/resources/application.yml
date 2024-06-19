@@ -15,3 +15,6 @@ spring:
 
   messages:
     basename: messages, errors
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
