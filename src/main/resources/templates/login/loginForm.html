@@ -83,7 +83,7 @@
                     <form action="/myblog/login" method="post" th:object="${userLoginDTO}">
 
                         <!-- input hidden으로 redirectURL 보내기 -->
-                        <input type="hidden" name="redirectURL" th:value="${redirectURL}">
+<!--                        <input type="hidden" name="redirectURL" th:value="${redirectURL}">-->
 
                         <!-- 필드 에러 아니고, 글로벌 에러 체크 -->
                         <div th:if="${#fields.hasGlobalErrors()}">

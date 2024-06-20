@@ -19,7 +19,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
             // 로그인 안한 사용자임
 
             // 로그인으로 redirect
-            response.sendRedirect("/myblog/loginform?redirectURL=" + requestURI);
+            response.sendRedirect("/myblog/loginform");
 
             return false; // 그다음 단계 못감!! (redirect만 실행될뿐..)
         }

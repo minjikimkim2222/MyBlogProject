@@ -69,6 +69,9 @@
 <div class="header">
     <a class="brand" th:href="@{/myblog}" th:text="myblog">플랫폼이름</a>
     <div class="auth-links">
+        <form th:action="@{/myblog/writeform}" method="get">
+            <button type="submit">새 글 작성</button>
+        </form>
         <form th:action="@{/myblog/logout}" method="post">
             <button type="submit" th:text="로그아웃">로그아웃</button>
         </form>
