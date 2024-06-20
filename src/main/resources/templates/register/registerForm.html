@@ -3,34 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Login</title>
+    <title>Register</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #121212;
+        }
+        .header .brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        .header .auth-links {
+            display: flex;
+            gap: 10px;
+        }
+        .header .auth-links a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid white;
+            border-radius: 5px;
+        }
+        .header .auth-links a:hover {
+            background-color: #333333;
+        }
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .card {
+            background-color: #333333;
+            border: none;
+            border-radius: 10px;
+        }
+        .card-body {
+            padding: 30px;
+        }
+        .form-control {
+            background-color: #222222;
+            border: 1px solid #444444;
+            color: white;
+        }
+        .form-control:focus {
+            background-color: #222222;
+            color: white;
+        }
         .field-error {
-            border-color: #dc3545;
             color: #dc3545;
         }
     </style>
 </head>
 <body>
-<!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" th:href="@{/myblog}" th:text="myblog">플랫폼이름</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/loginform}" th:text="로그인">로그인</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">내 벨로그</a>
-            </li>
-        </ul>
-    </div>
-</nav>
+<!-- Header -->
+<div class="header">
+    <a class="brand" th:href="@{/myblog}" th:text="myblog">플랫폼이름</a>
+</div>
 
 <!-- Register Form -->
 <div class="container mt-5">
@@ -45,7 +83,7 @@
                         <!-- 필드 에러 아니고, 글로벌 에러 체크 -->
                         <div th:if="${#fields.hasGlobalErrors()}">
                             <p class="field-error" th:each="err : ${#fields.globalErrors()}"
-                                th:text="${err}">전체 오류 메세지</p>
+                               th:text="${err}">전체 오류 메세지</p>
                         </div>
                         <div class="form-group">
                             <label for="username"></label>

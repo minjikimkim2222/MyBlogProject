@@ -28,13 +28,23 @@
             display: flex;
             gap: 10px;
         }
+        .header .auth-links form,
         .header .auth-links a {
             color: white;
             text-decoration: none;
             padding: 5px 10px;
             border: 1px solid white;
             border-radius: 5px;
+            background-color: transparent;
         }
+        .header .auth-links form button,
+        .header .auth-links a {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        .header .auth-links form button:hover,
         .header .auth-links a:hover {
             background-color: #333333;
         }
@@ -46,75 +56,46 @@
             background-color: #333333;
             border: none;
             border-radius: 10px;
+            margin: auto;
+            max-width: 600px;
         }
         .card-body {
             padding: 30px;
         }
-        .form-control {
-            background-color: #222222;
-            border: 1px solid #444444;
-            color: white;
-        }
-        .form-control:focus {
-            background-color: #222222;
-            color: white;
-        }
-        .field-error {
-            color: #dc3545;
-        }
     </style>
 </head>
 <body>
-<!-- Navigation Bar -->
 <!-- Header -->
 <div class="header">
     <a class="brand" th:href="@{/myblog}" th:text="myblog">플랫폼이름</a>
+    <div class="auth-links">
+        <form th:action="@{/myblog/logout}" method="post">
+            <button type="submit" th:text="로그아웃">로그아웃</button>
+        </form>
+        <form href="#" method="get">
+            <button type="submit" th:text="메인으로">메인으로</button>
+        </form>
+    </div>
 </div>
 
-<!-- Login Form -->
+<!-- 사용자 정보 띄워주기 확인 -->
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
-                    <h3 class="card-title text-center">로그인</h3>
-
-                    <!-- 로그인 폼 -->
-                    <form action="/myblog/login" method="post" th:object="${userLoginDTO}">
-
-                        <!-- 필드 에러 아니고, 글로벌 에러 체크 -->
-                        <div th:if="${#fields.hasGlobalErrors()}">
-                            <p class="field-error" th:each="err : ${#fields.globalErrors()}"
-                               th:text="${err}">전체 오류 메세지</p>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="username"></label>
-                            <input type="text" id="username" th:field="*{username}"
-                                   class="form-control"
-                                   placeholder="아이디">
-                            <div class="field-error" th:errors="*{username}">
-                                닉네임 오류
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="password"></label>
-                            <input type="password" id="password"
-                                   class="form-control" th:field="*{password}"
-                                   placeholder="암호">
-                            <div class="field-error" th:errors="*{password}">
-                                비밀번호 오류
-                            </div>
-                        </div>
-
-                        <input class="btn btn-secondary btn-block" type="submit"
-                               value="로그인">
-                    </form>
+                    <h3 class="card-title text-center" th:text="'안녕하세요, ' + ${user.username} + '님!'">안녕하세요, 사용자님!</h3>
+                    <p>아이디: <span th:text="${user.username}">user_id</span></p>
+                    <p>이메일: <span th:text="${user.email}">user@example.com</span></p>
+                    <p>이름: <span th:text="${user.name}">사용자 이름</span></p>
+                    <p>이미지 URL: <span th:text="${user.image}">image_url</span></p>
+                    <p>역할: <span th:text="${user.role}">사용자 역할</span></p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

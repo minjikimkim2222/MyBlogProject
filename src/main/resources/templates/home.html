@@ -4,39 +4,67 @@
     <meta charset="UTF-8">
     <title>Home</title>
     <style>
-        a.navbar-brand {
-            padding: 5px;
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #121212;
+        }
+        .header .brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+        .header .auth-links {
+            display: flex;
+            gap: 10px;
+        }
+        .header .auth-links a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid white;
+            border-radius: 5px;
+        }
+        .header .auth-links a:hover {
+            background-color: #333333;
+        }
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .jumbotron {
+            background-color: #333333;
+            padding: 50px;
+            border-radius: 10px;
         }
     </style>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" th:href="@{/myblog}" th:text="myblog">플랫폼이름</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/loginform}" th:text="로그인">로그인</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">내 벨로그</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
-    <!-- Content -->
-    <div class="container mt-5">
-        <div class="jumbotron text-center">
-            <h1>아직 미개발</h1>
-        </div>
+<!-- Header -->
+<div class="header">
+    <a class="brand" th:href="@{/myblog}" th:text="myblog">플랫폼이름</a>
+    <div class="auth-links">
+        <a th:href="@{/myblog/userreg}" th:text="회원가입">회원가입</a>
+        <a th:href="@{/myblog/loginform}" th:text="로그인">로그인</a>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</div>
+
+<!-- Content -->
+<div class="container">
+    <div class="jumbotron">
+        <h1>아직 미개발</h1>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

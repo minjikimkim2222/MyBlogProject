@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/myblog")
 @Slf4j
 public class LoginController {
 
@@ -53,23 +54,20 @@ public class LoginController {
         // 세션 value - userLoginForm 객체
         session.setAttribute(SessionConst.User_Login_Form, userLoginForm);
 
-        String username = userLoginForm.getUsername();
-        return "redirect:/myblog/@" + username;
+        return "redirect:/";
     }
 
-    @GetMapping("/myblog/@{username}")
-    public String userProfile(@PathVariable String username,
-      @SessionAttribute(name=SessionConst.User_Login_Form, required = false) UserLoginForm userLoginForm,
-      Model model){
-        // 세션에 데이터가 없으면 home 뷰로 -- 로그인 안했다면..
-        if (userLoginForm == null){
-            return "home";
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request){
+        // 세션 삭제
+
+        HttpSession session = request.getSession(false);
+            // 세션이 있으면 기존 세션 반환, 없으면 null 반환
+
+        if (session != null){
+            session.invalidate(); // 세션 제거
         }
 
-        // 세션에 데이터가 있다면 -- 로그인된 사용자 정보를 blog 뷰에 띄우기 위해..
-        User foundUser = userService.findByUsername(userLoginForm.getUsername()); // 유저 DTO말고 엔디티를 넘겨주기.
-
-        model.addAttribute("user", foundUser);
-        return "login/blog";
+        return "redirect:/";
     }
 }
