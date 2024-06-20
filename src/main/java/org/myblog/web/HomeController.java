@@ -37,4 +37,9 @@ public class HomeController {
         model.addAttribute("user", foundUser);
         return "login/loginhome";
     }
+
+    @GetMapping("/test")
+    public String test(){
+        return "test";
+    }
 }

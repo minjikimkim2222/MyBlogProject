@@ -22,16 +22,19 @@ public class LoginController {
 
     private final UserService userService;
     @GetMapping("/loginform")
-    public String loginForm(Model model){
+    public String loginForm(@RequestParam(value = "redirectURL", required = false) String redirectURL,
+                            Model model){
         model.addAttribute("userLoginDTO", new UserLoginForm());
+        model.addAttribute("redirectURL", redirectURL); // 로그인 폼에 redirectURL 추가..
         return "login/loginForm"; // 로그인 폼 요청
     }
 
     @PostMapping("/login") // 실제 로그인 기능
     public String login(@Validated @ModelAttribute("userLoginDTO")UserLoginForm form,
+                        @RequestParam(value = "redirectURL", defaultValue = "/") String redirectURL,
                         BindingResult bindingResult, HttpServletRequest request){
 
-        log.info("loginform : {}", form);
+        //log.info("loginform : {}", form);
 
         UserLoginForm userLoginForm = userService.login(form.getUsername(), form.getPassword());
 
@@ -54,7 +57,7 @@ public class LoginController {
         // 세션 value - userLoginForm 객체
         session.setAttribute(SessionConst.User_Login_Form, userLoginForm);
 
-        return "redirect:/";
+        return "redirect:" + redirectURL;
     }
 
     @PostMapping("/logout")
