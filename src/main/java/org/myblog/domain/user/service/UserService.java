@@ -27,6 +27,11 @@ public class UserService {
         return repository.findByUsername(username);
     }
 
+    @Transactional(readOnly = true)
+    public User findById(Long id){
+        return repository.findById(id).orElse(null);
+    }
+
     /*
         CRUD 기타 비즈니스 로직 모음
      */

@@ -23,13 +23,13 @@ public class BlogController {
 
     private final UserService userService;
     private final BlogService blogService;
-    @GetMapping("/createblog")
+    @GetMapping("/blogs")
     public String blogForm(Model model){
         model.addAttribute("blogCreateForm", new BlogCreateForm());
         return "blog/blogForm";
     }
 
-    @PostMapping("/createblog")
+    @PostMapping("/blogs")
     public String createBlog(@Validated @ModelAttribute("blogCreateForm")BlogCreateForm form,
                              BindingResult bindingResult,
                              @SessionAttribute(name = SessionConst.User_Login_Form, required = false)UserLoginForm userLoginForm){ // 블로그 생성
@@ -38,7 +38,7 @@ public class BlogController {
         log.info("Session으로부터 받은 유저 로그인 정보 : {} ", userLoginForm);
 
         if (bindingResult.hasErrors()){
-            return "redirect:/myblog/createblog"; // 타이틀 다시 입력하게끔
+            return "redirect:/myblog/blogs"; // 타이틀 다시 입력하게끔
         }
 
         Blog blog = new Blog();

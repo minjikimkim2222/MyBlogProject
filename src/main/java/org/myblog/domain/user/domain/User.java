@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.myblog.domain.blog.domain.Blog;
 import org.myblog.domain.follow.domain.Follow;
 import org.myblog.domain.likes.domain.Like;
@@ -16,6 +17,7 @@ import java.util.List;
 @Table(name = "users")
 @Getter @Setter
 @NoArgsConstructor
+@ToString
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -91,6 +91,9 @@
                                th:text="${err}">전체 오류 메세지</p>
                         </div>
 
+                        <!-- hidden으로 userid도 userLoginDTO에 추가 -->
+                        <input type="hidden" id="id" th:value="${userLoginDTO.id}">
+
                         <div class="form-group">
                             <label for="username"></label>
                             <input type="text" id="username" th:field="*{username}"

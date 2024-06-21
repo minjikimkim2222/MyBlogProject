@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Login</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
     <style>
         body {
             background-color: #121212;
@@ -27,6 +31,7 @@
         .header .auth-links {
             display: flex;
             gap: 10px;
+            align-items: center;
         }
         .header .auth-links form,
         .header .auth-links a {
@@ -48,19 +53,35 @@
         .header .auth-links a:hover {
             background-color: #333333;
         }
-        .container {
-            text-align: center;
-            margin-top: 50px;
-        }
-        .card {
-            background-color: #333333;
+        .dropdown-menu {
+            background-color: #121212;
             border: none;
-            border-radius: 10px;
-            margin: auto;
-            max-width: 600px;
         }
-        .card-body {
-            padding: 30px;
+        .dropdown-menu a,
+        .dropdown-menu button {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            background-color: transparent;
+            border: none;
+            width: 100%;
+            text-align: left;
+        }
+        .dropdown-menu a:hover,
+        .dropdown-menu button:hover {
+            background-color: #333333;
+        }
+        .search-btn {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid white;
+            border-radius: 5px;
+            background-color: transparent;
+            cursor: pointer;
+        }
+        .search-btn:hover {
+            background-color: #333333;
         }
     </style>
 </head>
@@ -69,44 +90,24 @@
 <div class="header">
     <a class="brand" th:href="@{/myblog}" th:text="myblog">플랫폼이름</a>
     <div class="auth-links">
-        <form th:action="@{/myblog/writeform}" method="get">
-            <button type="submit">새 글 작성</button>
-        </form>
-        <form th:action="@{/myblog/logout}" method="post">
-            <button type="submit" th:text="로그아웃">로그아웃</button>
-        </form>
-        <form href="#" method="get">
-            <button type="submit" th:text="메인으로">메인으로</button>
-        </form>
-    </div>
-</div>
-
-<!--세션 출력-->
-<div>
-    <h3>세션 출력 : <span th:text="${session.userLoginForm}"></span></h3>
-</div>
-<!-- 사용자 정보 띄워주기 확인 -->
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-<!--                    <h3 class="card-title text-center" th:text="'안녕하세요, ' + ${user.username} + '님!'">안녕하세요, 사용자님!</h3>-->
-<!--                    <p>아이디: <span th:text="${user.username}">user_id</span></p>-->
-<!--                    <p>이메일: <span th:text="${user.email}">user@example.com</span></p>-->
-<!--                    <p>이름: <span th:text="${user.name}">사용자 이름</span></p>-->
-<!--                    <p>이미지 URL: <span th:text="${user.image}">image_url</span></p>-->
-<!--                    <p>역할: <span th:text="${user.role}">사용자 역할</span></p>-->
-<!--                    <p>블로그: <span th:text="${user.blog}">사용자 역할</span></p>-->
-                </div>
+        <!-- 검색 버튼 -->
+        <a href="#" class="search-btn">검색</a>
+        <!-- 드롭다운 메뉴 -->
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="userMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                사용자
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenuButton">
+                <a class="dropdown-item" th:href="@{/myblog/{userid}(userid=${userid})}">내 벨로그</a>
+                <a class="dropdown-item" th:href="@{/myblog/writeform}">새 글 작성</a>
+                <a class="dropdown-item" th:href="@{/settings}">설정</a>
+                <form th:action="@{/myblog/logout}" method="post" style="margin: 0; padding: 0;">
+                    <button type="submit" class="dropdown-item" style="padding: 5px 10px; background: none; border: none;">로그아웃</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
-
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

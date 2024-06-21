@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>프로필 설정</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin-top: 30px;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .profile-header img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid white;
+            margin-right: 20px;
+        }
+        .profile-header h1 {
+            font-size: 2rem;
+            margin: 0;
+        }
+        .profile-header .edit-btn {
+            margin-left: auto;
+            background-color: #1DB954;
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        .form-group .blog-title,
+        .form-group .email-address {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: white;
+        }
+        .theme-buttons button {
+            background-color: transparent;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 10px;
+        }
+        .theme-buttons button.active {
+            background-color: #1DB954;
+        }
+        .delete-account {
+            background-color: red;
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #121212;
+        }
+        .header .brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<div class="header">
+    <a class="brand" th:href="@{/myblog}" th:text="myblog">플랫폼이름</a>
+</div>
+
+<div class="container">
+    <div class="profile-header">
+        <img th:src="@{/images/cat.jpeg}" alt="Profile Picture">
+        <h1 th:text="${user.username}">username</h1>
+        <form th:action="@{/users/{id}(id=${user.id})}">
+            <button class="edit-btn" type="submit" style="margin-left: 20px;">수정</button>
+        </form>
+    </div>
+    <form>
+        <div class="form-group">
+            <label>프로필 사진</label>
+            <div>
+                <button type="button" class="btn btn-primary">이미지 업로드</button>
+                <button type="button" class="btn btn-secondary">이미지 제거</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>벨로그 제목</label>
+            <div class="blog-title" th:text="${user.blog.title}"></div>
+        </div>
+        <div class="form-group">
+            <label>이메일 주소</label>
+            <div class="email-address" th:text="${user.email}"></div>
+            <button type="button" class="btn btn-secondary">변경</button>
+        </div>
+        <div class="form-group">
+            <label>이메일 수신 설정</label>
+            <div>
+                <input type="checkbox" id="commentNotifications" checked>
+                <label for="commentNotifications">댓글 알림</label>
+            </div>
+        </div>
+        <button type="button" class="delete-account">회원 탈퇴</button>
+    </form>
+</div>
+</body>
+</html>

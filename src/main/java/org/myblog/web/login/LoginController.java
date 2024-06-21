@@ -22,19 +22,16 @@ public class LoginController {
 
     private final UserService userService;
     @GetMapping("/loginform")
-    public String loginForm(/*@RequestParam(value = "redirectURL", required = false) String redirectURL,*/
-                            Model model){
+    public String loginForm(Model model){
+
         model.addAttribute("userLoginDTO", new UserLoginForm());
-        //model.addAttribute("redirectURL", redirectURL); // 로그인 폼에 redirectURL 추가..
+
         return "login/loginForm"; // 로그인 폼 요청
     }
 
     @PostMapping("/login") // 실제 로그인 기능
     public String login(@Validated @ModelAttribute("userLoginDTO")UserLoginForm form,
-                        /*@RequestParam(value = "redirectURL", defaultValue = "/") String redirectURL,*/
                         BindingResult bindingResult, HttpServletRequest request){
-
-        //log.info("loginform : {}", form);
 
         UserLoginForm userLoginForm = userService.login(form.getUsername(), form.getPassword());
 
@@ -50,6 +47,10 @@ public class LoginController {
 
         // 로그인 성공 처리 - 서블릿이 제공하는 HttpSession 적용 !!
 
+        // 이 로직 추가 -- 그래야, UserLoginForm DTO에 id값이 설정이 되서.. 나중에 username이 수정되어도 써먹을 수 있음 !!
+        User user = userService.findByUsername(form.getUsername());
+        userLoginForm.setId(user.getId());
+
         // 세션이 있으면 있는 세션 반환, 없으면 신규 세션 생성 (디폴트값 true)
         HttpSession session = request.getSession();
 
@@ -57,6 +58,7 @@ public class LoginController {
         // 세션 value - userLoginForm 객체
         session.setAttribute(SessionConst.User_Login_Form, userLoginForm);
 
+        log.info("loginform : {}", userLoginForm);
         return "redirect:/";
     }
 
