@@ -17,22 +17,43 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class UserController {
 
     private final UserService userService;
-    @GetMapping("/users/{id}")
+    @GetMapping("/users/{id}/username")
     public String updateUsernameForm(@PathVariable Long id, Model model){
         User user = userService.findById(id);
         log.info("User Entity : {}", user);
-        String username = null;
         model.addAttribute("user", user);
 
-        return "/user/editUser";
+        return "/user/editUsernameForm";
     }
 
-    @PatchMapping("/users/{id}")
+    @GetMapping("/users/{id}/email")
+    public String updateEmailForm(@PathVariable Long id, Model model){
+        User user = userService.findById(id);
+        //log.info("User Entity : {}", user);
+        model.addAttribute("user", user);
+
+        return "/user/editEmailForm";
+    }
+
+    @PatchMapping("/users/{id}/username")
     public String updateUsername(@PathVariable Long id, @ModelAttribute("user") User user){
         // User 엔디티에 username 수정 로직 추가 !!
 //        log.info("User toString >>> : {}", user);
         User founduser = userService.findById(id);
         founduser.setUsername(user.getUsername()); // username 값 바꿔주기
+
+        log.info("User info : {}", founduser);
+        userService.saveUser(founduser); // 없으면 insert, 있으면 update
+
+        return "redirect:/settings";
+    }
+
+    @PatchMapping("/users/{id}/email")
+    public String updateEmail(@PathVariable Long id, @ModelAttribute("user") User user){
+        // User 엔디티에 username 수정 로직 추가 !!
+//        log.info("User toString >>> : {}", user);
+        User founduser = userService.findById(id);
+        founduser.setEmail(user.getEmail()); // email 값 바꿔주기
 
         log.info("User info : {}", founduser);
         userService.saveUser(founduser); // 없으면 insert, 있으면 update

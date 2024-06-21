@@ -101,27 +101,42 @@
     <div class="profile-header">
         <img th:src="@{/images/cat.jpeg}" alt="Profile Picture">
         <h1 th:text="${user.username}">username</h1>
-        <form th:action="@{/users/{id}(id=${user.id})}">
+        <form th:action="@{/users/{id}/username(id=${user.id})}">
             <button class="edit-btn" type="submit" style="margin-left: 20px;">수정</button>
         </form>
     </div>
-    <form>
+
+    <!-- form 태그별로, 서로 다른 url로 이동할 것이기에 url 분리가 중요 !!! -->
+    <!-- 이미지 업로드 및 제거 -->
+    <form th:action="@{/users/{id}/profile-image(id=${user.id})}" method="post">
         <div class="form-group">
             <label>프로필 사진</label>
             <div>
-                <button type="button" class="btn btn-primary">이미지 업로드</button>
-                <button type="button" class="btn btn-secondary">이미지 제거</button>
+                <button type="submit" class="btn btn-primary">이미지 업로드</button>
+                <button type="submit" formaction="@{/users/{id}/remove-profile-image(id=${user.id})}" class="btn btn-secondary">이미지 제거</button>
             </div>
         </div>
-        <div class="form-group">
-            <label>벨로그 제목</label>
-            <div class="blog-title" th:text="${user.blog.title}"></div>
-        </div>
+    </form>
+
+    <!-- 벨로그 제목 (읽기 전용) -->
+    <div class="form-group">
+        <label>벨로그 제목</label>
+        <div class="blog-title" th:text="${user.blog.title}"></div>
+    </div>
+
+    <!-- 이메일 주소 변경 -->
+    <form th:action="@{/users/{id}/email(id=${user.id})}">
         <div class="form-group">
             <label>이메일 주소</label>
             <div class="email-address" th:text="${user.email}"></div>
-            <button type="button" class="btn btn-secondary">변경</button>
         </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-secondary">이메일 변경</button>
+        </div>
+    </form>
+
+    <!-- 이메일 수신 설정 -->
+    <form th:action="@{/users/{id}/notification-settings(id=${user.id})}" method="post">
         <div class="form-group">
             <label>이메일 수신 설정</label>
             <div>
@@ -129,7 +144,16 @@
                 <label for="commentNotifications">댓글 알림</label>
             </div>
         </div>
-        <button type="button" class="delete-account">회원 탈퇴</button>
+        <div class="form-group">
+            <button type="submit" class="btn btn-secondary">저장</button>
+        </div>
+    </form>
+
+    <!-- 회원 탈퇴 -->
+    <form th:action="@{/users/{id}/withdraw(id=${user.id})}" method="post">
+        <div class="form-group">
+            <button type="submit" class="btn btn-danger">회원 탈퇴</button>
+        </div>
     </form>
 </div>
 </body>
