@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Create Blog</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #121212;
+        }
+        .header .brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .card {
+            background-color: #333333;
+            border: none;
+            border-radius: 10px;
+            margin: auto;
+            max-width: 600px;
+        }
+        .card-body {
+            padding: 30px;
+        }
+        .form-group input {
+            background-color: #444444;
+            color: white;
+            border: none;
+        }
+        .btn-primary {
+            background-color: #5cb85c;
+            border: none;
+        }
+        .field-error {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<div class="header">
+    <a class="brand" th:href="@{/myblog}" th:text="myblog">플랫폼이름</a>
+</div>
+
+<h3>로그인은 했고, 아직 내 벨로그 생성 전 단계입니다 !!</h3>
+<!-- Content -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title text-center">내 벨로그 생성</h3>
+
+                    <form th:action="@{/myblog/createblog}" method="post" th:object="${blogCreateForm}">
+                        <div class="form-group">
+                            <label for="title">벨로그 이름</label>
+                            <input type="text" id="title" th:field="*{title}"
+                                   class="form-control" required>
+                        </div>
+                        <div class="field-error" th:errors="*{title}">
+                            블로그 제목 오류
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">생성</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

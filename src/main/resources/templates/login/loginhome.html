@@ -81,18 +81,23 @@
     </div>
 </div>
 
+<!--세션 출력-->
+<div>
+    <h3>세션 출력 : <span th:text="${session.userLoginForm}"></span></h3>
+</div>
 <!-- 사용자 정보 띄워주기 확인 -->
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
-                    <h3 class="card-title text-center" th:text="'안녕하세요, ' + ${user.username} + '님!'">안녕하세요, 사용자님!</h3>
-                    <p>아이디: <span th:text="${user.username}">user_id</span></p>
-                    <p>이메일: <span th:text="${user.email}">user@example.com</span></p>
-                    <p>이름: <span th:text="${user.name}">사용자 이름</span></p>
-                    <p>이미지 URL: <span th:text="${user.image}">image_url</span></p>
-                    <p>역할: <span th:text="${user.role}">사용자 역할</span></p>
+<!--                    <h3 class="card-title text-center" th:text="'안녕하세요, ' + ${user.username} + '님!'">안녕하세요, 사용자님!</h3>-->
+<!--                    <p>아이디: <span th:text="${user.username}">user_id</span></p>-->
+<!--                    <p>이메일: <span th:text="${user.email}">user@example.com</span></p>-->
+<!--                    <p>이름: <span th:text="${user.name}">사용자 이름</span></p>-->
+<!--                    <p>이미지 URL: <span th:text="${user.image}">image_url</span></p>-->
+<!--                    <p>역할: <span th:text="${user.role}">사용자 역할</span></p>-->
+<!--                    <p>블로그: <span th:text="${user.blog}">사용자 역할</span></p>-->
                 </div>
             </div>
         </div>

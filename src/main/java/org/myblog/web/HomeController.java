@@ -28,14 +28,18 @@ public class HomeController {
             Model model){
         // 세션에 데이터가 없으면 home 뷰로 -- 로그인 안된 상태
         if (userLoginForm == null){
-            return "home";
+            return "home"; // 로그인 전 페이지
         }
 
         // 세션에 데이터가 있다면 -- 로그인된 사용자 정보를 blog 뷰에 띄우기 위해..
         User foundUser = userService.findByUsername(userLoginForm.getUsername()); // 유저 DTO말고 엔디티를 넘겨주기.
-
         model.addAttribute("user", foundUser);
-        return "login/loginhome";
+
+        // 벨로그 생성여부에 따라, 페이지 분기
+        if (foundUser.getBlog() == null){
+            return "redirect:/myblog/createblog"; //  블로그 생성 페이지로 리다이렉션
+        }
+        return "login/loginhome"; // 로그인 O, 블로그 O -> loginhome 뷰
     }
 
     @GetMapping("/test")

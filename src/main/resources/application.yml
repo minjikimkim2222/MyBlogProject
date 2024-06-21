@@ -13,8 +13,10 @@ spring:
       ddl-auto: update
     show-sql: true
 
+
   messages:
     basename: messages, errors
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+
