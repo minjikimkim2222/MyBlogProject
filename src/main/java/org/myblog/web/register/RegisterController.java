@@ -64,6 +64,8 @@ public class RegisterController {
         user.setEmail(form.getEmail());
         user.setImage(null); // -- 이미지 url 일단 null로 해둠
         user.setRole(Role.ROLE_USER); // -- 일단 디폴트로 ROLE_USER -- 일반 유저로 등록
+        user.setCommentNotification(form.getCommentNotification());
+        user.setUpdateNotification(form.getUpdateNotification());
 
         User savedUser = userService.saveUser(user);
 

@@ -89,6 +89,8 @@
             font-weight: bold;
             color: white;
         }
+
+
     </style>
 </head>
 <body>
@@ -136,16 +138,24 @@
     </form>
 
     <!-- 이메일 수신 설정 -->
-    <form th:action="@{/users/{id}/notification-settings(id=${user.id})}" method="post">
+    <form th:action="@{/users/{id}/notification-settings(id=${user.id})}" method="post" th:object="${user}">
+        <input type="hidden" name="_method" value="patch">
+
         <div class="form-group">
             <label>이메일 수신 설정</label>
-            <div>
-                <input type="checkbox" id="commentNotifications" checked>
-                <label for="commentNotifications">댓글 알림</label>
+            <div class="toggle">
+                <input type="checkbox" id="commentNotification" name="commentNotification"
+                th:field="*{commentNotification}">
+                <label for="commentNotification">댓글 알림</label>
+            </div>
+            <div class="toggle">
+                <input type="checkbox" id="updateNotification" name="updateNotification"
+                th:field="*{updateNotification}">
+                <label for="updateNotification">블로그 업데이트 소식</label>
             </div>
         </div>
         <div class="form-group">
-            <button type="submit" class="btn btn-secondary">저장</button>
+            <button type="submit" class="btn btn-secondary">수신설정 변경</button>
         </div>
     </form>
 

@@ -36,6 +36,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    // 이메일 수신 여부
+    private Boolean commentNotification; // 댓글 알림 여부
+    private Boolean updateNotification; // 업데이트 소식 알림 여부
+
     // User 테이블 필드 완
     // users 테이블과 다른 테이블간의 관계매핑변수
      // users - blogs 테이블 1:1 관계

@@ -130,6 +130,21 @@
                                 이메일 오류
                             </div>
                         </div>
+
+                        <!-- 이메일 수선여부 체크박스 추가 -->
+                        <div>
+                            <div class="form-check" style="margin-bottom: 10px;">
+                                <input type="checkbox" id="commentNotification" th:field="*{commentNotification}" class="form-check-input">
+                                <label for="commentNotification" class="form-check-label">댓글 알림 수신여부</label>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-check" style="margin-bottom: 10px;">
+                                <input type="checkbox" id="updateNotification" th:field="*{updateNotification}" class="form-check-input">
+                                <label for="updateNotification" class="form-check-label">업데이트 소식 수신여부</label>
+                            </div>
+                        </div>
+
                         <input class="btn btn-secondary btn-block" type="submit" value="회원가입">
 
                     </form>

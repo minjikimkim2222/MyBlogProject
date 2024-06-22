@@ -2,6 +2,7 @@ package org.myblog.domain.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
@@ -24,5 +25,7 @@ public class UserRegisterForm {
     @Email
     private String email;
 
-
+    // 이메일 수신 여부
+    private Boolean commentNotification; // 댓글 알림 여부
+    private Boolean updateNotification; // 업데이트 소식 알림 여부
 }
