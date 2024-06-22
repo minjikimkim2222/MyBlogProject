@@ -32,6 +32,10 @@ public class UserService {
         return repository.findById(id).orElse(null);
     }
 
+    @Transactional
+    public void deleteUser(Long id){
+        repository.deleteById(id);
+    }
     /*
         CRUD 기타 비즈니스 로직 모음
      */

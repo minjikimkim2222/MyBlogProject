@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.myblog.domain.user.domain.User;
 import org.myblog.domain.user.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -73,5 +74,17 @@ public class UserController {
         userService.saveUser(foundUser); // 없으면 insert, 있다면 update
 
         return "redirect:/settings";
+    }
+
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id){
+        User foundUser = userService.findById(id);
+
+        log.info("id : {}", id);
+        log.info("foundUser : {}", foundUser);
+
+        userService.deleteUser(id);
+
+        return ResponseEntity.ok().build();
     }
 }
