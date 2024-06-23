@@ -109,24 +109,16 @@
 
 <div class="container">
     <div class="profile-header">
-        <img th:src="@{'/images/' + ${user.profileFile.storeFileName}}" alt="Profile Picture"> <!-- 이미지 업로드한 파일 불러오기 !! GET - /images/${filename} -->
+        <img th:src="${user.profileFile != null  ? '/images/' + user.profileFile.storeFileName : '/images/default-profile.png'}"
+             alt="Profile Image" />
+        <!-- 이미지 업로드한 파일 불러오기 !! GET - /images/${filename} -->
         <h1 th:text="${user.username}">username</h1>
         <form th:action="@{/users/{id}/username(id=${user.id})}">
             <button class="edit-btn" type="submit" style="margin-left: 20px;">수정</button>
         </form>
     </div>
 
-    <!-- form 태그별로, 서로 다른 url로 이동할 것이기에 url 분리가 중요 !!! -->
-    <!-- 프로필 사진 업로드, 제거 -->
-<!--    <form th:action="@{/users/{id}/profile-image(id=${user.id})}" method="post">-->
-<!--        <div class="form-group">-->
-<!--            <label>프로필 사진</label>-->
-<!--            <div>-->
-<!--                <button type="submit" class="btn btn-primary">이미지 업로드</button>-->
-<!--                <button type="submit" formaction="@{/users/{id}/remove-profile-image(id=${user.id})}" class="btn btn-secondary">이미지 제거</button>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </form>-->
+    <!-- 프로필 이미지파일 업로드 & 제거 -->
     <div>
         <form id="profileUploadForm" th:action="@{/users/{id}/profile-image(id=${user.id})}" method="post" enctype="multipart/form-data">
             <div class="form-group">
