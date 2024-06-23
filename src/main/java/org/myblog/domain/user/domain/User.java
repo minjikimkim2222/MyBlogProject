@@ -1,10 +1,7 @@
 package org.myblog.domain.user.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.myblog.domain.blog.domain.Blog;
 import org.myblog.domain.follow.domain.Follow;
 import org.myblog.domain.likes.domain.Like;
@@ -15,9 +12,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-@Getter @Setter
 @NoArgsConstructor
-@ToString
+@Data
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +27,7 @@ public class User {
 
     private String email;
 
-    private String image; // 사용자 프로필 링크
+//    private String image; // 사용자 프로필 링크
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -39,6 +35,10 @@ public class User {
     // 이메일 수신 여부
     private Boolean commentNotification; // 댓글 알림 여부
     private Boolean updateNotification; // 업데이트 소식 알림 여부
+
+    // 프로필이미지 - UploadFile 임베디드 타입 설정
+    @Embedded
+    private UploadFile profileFile;
 
     // User 테이블 필드 완
     // users 테이블과 다른 테이블간의 관계매핑변수

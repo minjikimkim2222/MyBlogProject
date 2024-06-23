@@ -90,7 +90,15 @@
             color: white;
         }
 
-
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .btn {
+            margin-right: 0.5rem;
+        }
+        .file-input {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -101,7 +109,7 @@
 
 <div class="container">
     <div class="profile-header">
-        <img th:src="@{/images/cat.jpeg}" alt="Profile Picture">
+        <img th:src="@{'/images/' + ${user.profileFile.storeFileName}}" alt="Profile Picture"> <!-- 이미지 업로드한 파일 불러오기 !! GET - /images/${filename} -->
         <h1 th:text="${user.username}">username</h1>
         <form th:action="@{/users/{id}/username(id=${user.id})}">
             <button class="edit-btn" type="submit" style="margin-left: 20px;">수정</button>
@@ -109,16 +117,39 @@
     </div>
 
     <!-- form 태그별로, 서로 다른 url로 이동할 것이기에 url 분리가 중요 !!! -->
-    <!-- 이미지 업로드 및 제거 -->
-    <form th:action="@{/users/{id}/profile-image(id=${user.id})}" method="post">
-        <div class="form-group">
-            <label>프로필 사진</label>
-            <div>
-                <button type="submit" class="btn btn-primary">이미지 업로드</button>
-                <button type="submit" formaction="@{/users/{id}/remove-profile-image(id=${user.id})}" class="btn btn-secondary">이미지 제거</button>
+    <!-- 프로필 사진 업로드, 제거 -->
+<!--    <form th:action="@{/users/{id}/profile-image(id=${user.id})}" method="post">-->
+<!--        <div class="form-group">-->
+<!--            <label>프로필 사진</label>-->
+<!--            <div>-->
+<!--                <button type="submit" class="btn btn-primary">이미지 업로드</button>-->
+<!--                <button type="submit" formaction="@{/users/{id}/remove-profile-image(id=${user.id})}" class="btn btn-secondary">이미지 제거</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </form>-->
+    <div>
+        <form id="profileUploadForm" th:action="@{/users/{id}/profile-image(id=${user.id})}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <input id="profileImage" type="file" name="profileImage" class="file-input" onchange="document.getElementById('profileUploadForm').submit();">
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('profileImage').click();">이미지 업로드</button>
             </div>
-        </div>
-    </form>
+        </form>
+
+        <form id="profileRemoveForm" th:action="@{/users/{id}/profile-image(id=${user.id})}" method="post">
+            <input type="hidden" name="_method" value="delete">
+            <button type="submit" class="btn btn-secondary">이미지 제거</button>
+        </form>
+    </div>
+
+
+    <script>
+        document.getElementById('profileImage').addEventListener('change', function() {
+            if (this.files.length > 0) {
+                document.getElementById('profileUploadForm').submit();
+            }
+        });
+    </script>
+
 
     <!-- 벨로그 제목 (읽기 전용) -->
     <div class="form-group">
