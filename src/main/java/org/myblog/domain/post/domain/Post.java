@@ -11,6 +11,7 @@ import org.myblog.domain.series.domain.Series;
 import org.myblog.domain.tag.domain.Tag;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.List;
 @Table(name = "posts")
 @Getter @Setter
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class) // @CreatedDate, @LastModifiedDate 추가를 위함..
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +39,7 @@ public class Post {
     @JoinColumn(name = "series_id")
     private Series series;
 
-    private Boolean published;
+    private Boolean published; // 임시글 여부
 
     @Column(name = "created_at")
     @CreatedDate

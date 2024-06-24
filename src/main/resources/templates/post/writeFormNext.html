@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Post Preview</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .post-preview-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 80%;
+            max-width: 600px;
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .thumbnail-upload {
+            width: 100%;
+            height: 150px;
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+        }
+        .thumbnail-upload button {
+            background-color: #1abc9c;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .thumbnail-upload button:hover {
+            background-color: #16a085;
+        }
+        .post-description {
+            border: none;
+            background: none;
+            color: #bbb;
+            width: 100%;
+            resize: none;
+        }
+        .post-description::placeholder {
+            color: #555;
+        }
+        .settings-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .settings-row button, .settings-row input {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        .settings-row button:hover, .settings-row input:hover {
+            color: #1abc9c;
+        }
+        .settings-row .series-button {
+            background-color: #1abc9c;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .settings-row .series-button:hover {
+            background-color: #16a085;
+        }
+        .footer-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-buttons button {
+            background-color: #1abc9c;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .footer-buttons button:hover {
+            background-color: #16a085;
+        }
+        .footer-buttons .cancel-button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 10px 20px;
+        }
+        .footer-buttons .cancel-button:hover {
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+<div class="post-preview-container">
+    <div class="thumbnail-upload">
+        <button>썸네일 업로드</button>
+    </div>
+    <textarea class="post-description" rows="3" placeholder="당신의 포스트를 짧게 소개해보세요..."></textarea>
+    <div class="settings-container">
+        <div class="settings-row">
+            <div>공개 설정</div>
+            <div>
+                <button>전체 공개</button>
+                <button>비공개</button>
+            </div>
+        </div>
+        <div class="settings-row">
+            <div>URL 설정</div>
+            <input type="text" value="/@minjiki2/" readonly>
+        </div>
+        <div class="settings-row">
+            <div>시리즈 설정</div>
+            <button class="series-button">시리즈에 추가하기</button>
+        </div>
+    </div>
+    <div class="footer-buttons">
+        <button class="cancel-button">취소</button>
+        <button>출간하기</button>
+    </div>
+</div>
+</body>
+</html>

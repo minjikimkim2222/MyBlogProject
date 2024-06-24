@@ -99,7 +99,7 @@
             </button>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenuButton">
                 <a class="dropdown-item" th:href="@{/myblog/{userid}(userid=${userid})}">내 벨로그</a>
-                <a class="dropdown-item" th:href="@{/myblog/writeform}">새 글 작성</a>
+                <a class="dropdown-item" th:href="@{/writeform}">새 글 작성</a>
                 <a class="dropdown-item" th:href="@{/settings}">설정</a>
                 <form th:action="@{/myblog/logout}" method="post" style="margin: 0; padding: 0;">
                     <button type="submit" class="dropdown-item" style="padding: 5px 10px; background: none; border: none;">로그아웃</button>
