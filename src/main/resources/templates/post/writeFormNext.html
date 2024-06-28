@@ -115,31 +115,33 @@
 </head>
 <body>
 <div class="post-preview-container">
-    <div class="thumbnail-upload">
-        <button>썸네일 업로드</button>
-    </div>
-    <textarea class="post-description" rows="3" placeholder="당신의 포스트를 짧게 소개해보세요..."></textarea>
-    <div class="settings-container">
-        <div class="settings-row">
-            <div>공개 설정</div>
-            <div>
-                <button>전체 공개</button>
-                <button>비공개</button>
+    <form action="/writeform" method="post">
+        <div class="thumbnail-upload">
+            <button>썸네일 업로드</button>
+        </div>
+        <textarea class="post-description" rows="3" placeholder="당신의 포스트를 짧게 소개해보세요..."></textarea>
+        <div class="settings-container">
+            <div class="settings-row">
+                <div>공개 설정</div>
+                <div>
+                    <button>전체 공개</button>
+                    <button>비공개</button>
+                </div>
+            </div>
+            <div class="settings-row">
+                <div>URL 설정</div>
+                <input type="text" value="/@minjiki2/" readonly>
+            </div>
+            <div class="settings-row">
+                <div>시리즈 설정</div>
+                <button class="series-button">시리즈에 추가하기</button>
             </div>
         </div>
-        <div class="settings-row">
-            <div>URL 설정</div>
-            <input type="text" value="/@minjiki2/" readonly>
+        <div class="footer-buttons">
+            <button class="cancel-button">취소</button>
+            <button>출간하기</button>
         </div>
-        <div class="settings-row">
-            <div>시리즈 설정</div>
-            <button class="series-button">시리즈에 추가하기</button>
-        </div>
-    </div>
-    <div class="footer-buttons">
-        <button class="cancel-button">취소</button>
-        <button>출간하기</button>
-    </div>
+    </form>
 </div>
 </body>
 </html>
