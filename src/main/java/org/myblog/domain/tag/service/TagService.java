@@ -30,6 +30,19 @@ public class TagService {
         return tagRepository.save(tag);
     }
 
+    public Tag saveTagByName(String tagName){
+        // 태그가 존재하면 Optional안에 태그 객체가, 없으면 비어있는 Optional
+        Optional<Tag> existingTag = tagRepository.findByTagName(tagName);
+
+        // 람다식을 이용해, existingTag가 존재하면 그값 반환, 없으면 람다표현식의 값 반환
+        return existingTag.orElseGet(() -> {
+           Tag newTag = new Tag();
+           newTag.setTagName(tagName);
+
+           return tagRepository.save(newTag);
+        });
+    }
+
     public Tag findByTagName(String tagName){
         return tagRepository.findByTagName(tagName).orElse(null); // 해당 태그명에 있는 태그가 없다면 null 리턴
     }

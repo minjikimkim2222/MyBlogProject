@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.myblog.domain.tag.domain.Tag;
 import org.myblog.domain.tag.service.TagService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,11 +23,6 @@ public class TagController {
         return tagService.findAllTags();
     }
 
-    @PostMapping
-    public Tag createTag(@RequestBody Tag tag){
-        return tagService.saveTag(tag);
-    }
 
-//    @DeleteMapping("/{tagId}/{postId}")
 
 }

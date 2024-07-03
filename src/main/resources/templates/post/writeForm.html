@@ -101,7 +101,7 @@
 <body>
 
 <div class="editor-container">
-    <form id="postForm" th:action="@{/writeform/next}" th:object="${postCreatedDto}" method="get">
+    <form id="postForm" th:action="@{/writeform/next}" th:object="${postCreatedDto}" method="post">
         <input type="text" class="editor-title" placeholder="제목을 입력하세요" name="title"
                th:field="*{title}" required>
 
@@ -134,6 +134,7 @@
         const tagsContainer = document.getElementById('tagsContainer'); // 입력된 태그들을 표시하는 태그컨테이너
         const publishedInput = document.getElementById('published'); // 임시저장여부를 나타낼 hidden input 필드
         const tagsInput = document.getElementById('tags'); // 태그들을 JSON 형식으로 서버로 전송하기 위해 hidden input 필드
+
         let tags = []; // 입력된 태그들을 저장할 배열 -- 지역변수
 
         tagInput.addEventListener('click', function () {
@@ -142,32 +143,20 @@
 
         // tagInput에서 'Enter'키 눌렀을 때, 태그 추가
         tagInput.addEventListener('keydown', function (event) {
+            if (event.isComposing) return; // 한글 입력 중인 경우 이벤트 무시
 
             if (event.key === 'Enter') {
                 event.preventDefault(); // 폼 제출과 같은 기본동작 방지
                 const tag = tagInput.value.trim(); // 입력된 태그공백 제거
 
-                if (tag && !tags.includes(tag)) { // 이미 존재하는 태그인지 확인
+                if (tags.includes(tag)){
+                    alert("이미 입력한 태그입니다.");
+                }
 
-                    // !! 서버에 태그 추가 요청 !!
-                    fetch('/tags', {
-                        method: 'POST',
-                        headers : {
-                            'Content-Type' : 'application/json'
-                        },
-                        body: JSON.stringify({ tagName: tag })
-                        // payload로 "tagName: "[입력한 태그이름]" 날라감 (JSON 객체를 문자열화)
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data && data.id){
-                            tags.push(tag); // 태그를 배열에 추가
-                            addTag(tag); // 태그를 화면에 표시
-                            tagInput.value = ''; // 입력필드 비우기
-                        } else {
-                            console.error('Failed to add tag');
-                        }
-                    });
+                if (tag && !tags.includes(tag)) { // 이미 존재하는 태그인지 확인
+                    tags.push(tag); // 태그를 배열에 추가
+                    addTag(tag); // 태그를 화면에 표시
+                    tagInput.value = ''; // 입력필드 비우기
                 }
             }
         });
@@ -187,22 +176,7 @@
                 tagsContainer.removeChild(tagItem);
                 tags = tags.filter(t => t !== tag);
 
-                /*
-                    !! 서버에 태그 삭제 요청 보내기 !!
-                */
-                fetch(`/tags/${tag}`, {
-                    method: 'DELETE',
-                    headers : {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({tagName : tag})
-                }).then(response => {
-                    if (!response.ok){
-                        console.log('Failed to delete tag !!');
-                    }
-                });
             }); // 태그 제거하는 이벤트리스너
-
 
             tagItem.appendChild(removeButton);
             tagsContainer.appendChild(tagItem); // tagContainer에 태그 추가함
@@ -213,7 +187,6 @@
             publishedInput.value = 'false'; // published 값을 false로 설정
 
             tagsInput.value = tags.join(','); // JSON 문자열 대신 콤마로 구분된 문자열 반환
-           // tagsInput.value = JSON.stringify(tags); // 태그배열을 JSON 문자열로 변환하여, 숨겨진 input 필드에 저장
 
             document.getElementById('postForm').submit(); // 폼 제출
         });
@@ -222,14 +195,12 @@
             publishedInput.value = 'true';
 
             tagsInput.value = tags.join(',');
-            //tagsInput.value = JSON.stringify(tags);
         });
 
         // 폼이 제출될 때, 이벤트리스너
         document.getElementById('postForm').addEventListener('submit', function () {
             tagsInput.value = tags.join(',');
 
-            //tagsInput.value = JSON.stringify(tags); // 폼이 제출될 때서야, !! 태그 배열을 JSON '문자열'로 변환 !!!
         });
     });
 </script>

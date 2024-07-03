@@ -57,7 +57,7 @@ public class Post {
     private List<Like> likes;
 
     @ManyToMany
-    @JoinTable( // posts - tags 관계테이블인 post_tag에서 만듦..
+    @JoinTable( // posts - tags 다대다 -- Post가 연관관계 주인
         name = "post_tags",
         joinColumns = @JoinColumn(name = "post_id"), // 지금 Post 테이블 기준으로 조인칼럼
         inverseJoinColumns = @JoinColumn(name = "tag_id") // 반대쪽의 Tag 테이블 기준으로

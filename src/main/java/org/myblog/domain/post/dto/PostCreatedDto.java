@@ -14,8 +14,6 @@ public class PostCreatedDto {
 
     private String content;
 
-    private String subtitle;
-
     private Boolean published; // 임시글 여부
 
 }
