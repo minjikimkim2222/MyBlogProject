@@ -9,14 +9,18 @@ import org.myblog.domain.post.repository.PostRepository;
 import org.myblog.domain.post.service.PostService;
 import org.myblog.domain.tag.domain.Tag;
 import org.myblog.domain.tag.service.TagService;
+import org.myblog.domain.user.domain.UploadFile;
 import org.myblog.domain.user.dto.UserLoginForm;
 import org.myblog.domain.user.service.UserService;
+import org.myblog.web.file.FileStore;
 import org.myblog.web.login.SessionConst;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +34,7 @@ public class PostController {
 
     private final TagService tagService;
     private final PostService postService;
+    private final FileStore fileStore;
 
     @GetMapping("/writeform")
     public String writeForm(Model model){
@@ -76,17 +81,24 @@ public class PostController {
 
     @PostMapping("/writeform/next/step")
     public String writeFormNextStep(@ModelAttribute(name = "postCreatedDto2") PostCreatedDto2 postCreatedDto2,
-        @SessionAttribute(name = SessionConst.User_Login_Form, required = false)UserLoginForm userLoginForm){
+        @SessionAttribute(name = SessionConst.User_Login_Form, required = false)UserLoginForm userLoginForm) throws IOException {
 
-        log.info("postCreatedDto2 : {}", postCreatedDto2);
-        log.info("postId : {}", postCreatedDto2.getPostId());
-        log.info("multipartFile : {}", postCreatedDto2.getPreviewImage());
+        // 파일 저장
+        MultipartFile multipartFile = postCreatedDto2.getPreviewImage();
+        UploadFile previewImage = null;
+        if (multipartFile != null && !multipartFile.isEmpty()){
+            previewImage = fileStore.storeFile(multipartFile);
+        }
 
 
+        // DB에 저장
+        Post post = postService.findById(postCreatedDto2.getPostId());
+        post.setPreviewImage(previewImage);
+        post.setSubtitle(postCreatedDto2.getSubtitle());
+        post.setVisibility(postCreatedDto2.getVisibility());
+        post.setBlog(postService.findBlogByUserLoginForm(userLoginForm));
 
-
-        // post엔디티에서 blogId는 세션값으로부터 UserLoginForm -> userId 넘겨서 blogID 리턴하는 거 postservice 부분에 만들어서 쓸 것
-        // -- 그리고 post 엔디티의 속성값 채우자
+        postService.savePost(post);
 
         //return "redirect:/@" + userLoginForm.getId() + "/" + [post저장후, 포스트타이틀];
         return "redirect:/";
