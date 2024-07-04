@@ -7,14 +7,18 @@ import org.myblog.domain.tag.repository.TagRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
-    private final TagRepository tagRepository;
 
     public Post savePost(Post post){
         return postRepository.save(post);
+    }
+
+    public Post findById(Long id){
+        return postRepository.findById(id).get();
     }
 }

@@ -57,4 +57,13 @@ public class FileController {
         // 해당 경로의 이미지 파일을 찾아서 업로드해줌
     }
 
+    // Post 미리보기 이미지 업로드
+//    @PostMapping("/posts/{id}/preview-image")
+//    public String uploadPreviewImage(@PathVariable Long id){
+//        log.info("post id : {}", id);
+//
+//        return "redirect:/"; // 이건 테스트용임 !!!
+//    }
+
+
 }

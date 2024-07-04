@@ -21,4 +21,4 @@ spring:
       matching-strategy: ant_path_matcher
 
 file:
-  dir: /Users/minji/Desktop/velog/src/main/resources/static/images/user-profile/
+  dir: /Users/minji/Desktop/velog/src/main/resources/static/images/profile-image/

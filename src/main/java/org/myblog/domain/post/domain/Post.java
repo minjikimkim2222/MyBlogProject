@@ -9,6 +9,7 @@ import org.myblog.domain.comment.domain.Comment;
 import org.myblog.domain.likes.domain.Like;
 import org.myblog.domain.series.domain.Series;
 import org.myblog.domain.tag.domain.Tag;
+import org.myblog.domain.user.domain.UploadFile;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -40,6 +41,11 @@ public class Post {
     private Series series;
 
     private Boolean published; // 임시글 여부
+
+    private Boolean visibility; // 공개글 여부 (true - 공개글, false - 비공개글)
+
+    @Embedded
+    private UploadFile previewImage; // post -- 미리보기 이미지
 
     @Column(name = "created_at")
     @CreatedDate

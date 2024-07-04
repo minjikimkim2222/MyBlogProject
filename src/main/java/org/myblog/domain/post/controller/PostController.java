@@ -4,10 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.myblog.domain.post.domain.Post;
 import org.myblog.domain.post.dto.PostCreatedDto;
+import org.myblog.domain.post.dto.PostCreatedDto2;
 import org.myblog.domain.post.repository.PostRepository;
 import org.myblog.domain.post.service.PostService;
 import org.myblog.domain.tag.domain.Tag;
 import org.myblog.domain.tag.service.TagService;
+import org.myblog.domain.user.dto.UserLoginForm;
+import org.myblog.domain.user.service.UserService;
+import org.myblog.web.login.SessionConst;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -58,9 +62,34 @@ public class PostController {
         return "redirect:/writeform/next/step/" + savedPost.getId();
     }
 
-    // postId로 2차 저장 폼 요청해야 됨 !!
+    // postId로 2차 저장 폼 요청해야 됨 !! -- 여기서 Post 엔디티 값이 채워졌는지 체크
     @GetMapping("/writeform/next/step/{postId}")
-    public String writeFormNextStep(@PathVariable Long postId){
+    public String writeFormNextStep(@PathVariable Long postId, Model model){
+        PostCreatedDto2 postCreatedDto2 = new PostCreatedDto2();
+        postCreatedDto2.setVisibility(true); // 기본값 설정 (전체공개)
+        postCreatedDto2.setPostId(postId); // -- 히든변수로 설정해서 값 변경 불가하게끔 !!
+
+        model.addAttribute("postCreatedDto2",postCreatedDto2);
+
         return "post/writeFormNext";
     }
+
+    @PostMapping("/writeform/next/step")
+    public String writeFormNextStep(@ModelAttribute(name = "postCreatedDto2") PostCreatedDto2 postCreatedDto2,
+        @SessionAttribute(name = SessionConst.User_Login_Form, required = false)UserLoginForm userLoginForm){
+
+        log.info("postCreatedDto2 : {}", postCreatedDto2);
+        log.info("postId : {}", postCreatedDto2.getPostId());
+        log.info("multipartFile : {}", postCreatedDto2.getPreviewImage());
+
+
+
+
+        // post엔디티에서 blogId는 세션값으로부터 UserLoginForm -> userId 넘겨서 blogID 리턴하는 거 postservice 부분에 만들어서 쓸 것
+        // -- 그리고 post 엔디티의 속성값 채우자
+
+        //return "redirect:/@" + userLoginForm.getId() + "/" + [post저장후, 포스트타이틀];
+        return "redirect:/";
+    }
+
 }

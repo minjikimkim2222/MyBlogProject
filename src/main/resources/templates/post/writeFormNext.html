@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Post Preview</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4YMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
     <style>
         body {
             background-color: #121212;
@@ -29,11 +32,17 @@
         .thumbnail-upload {
             width: 100%;
             height: 150px;
-            background-color: #333;
             display: flex;
             justify-content: center;
             align-items: center;
             border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        .thumbnail-upload img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
         }
         .thumbnail-upload button {
             background-color: #1abc9c;
@@ -42,6 +51,8 @@
             padding: 10px 20px;
             cursor: pointer;
             border-radius: 5px;
+            position: absolute;
+            bottom: 10px;
         }
         .thumbnail-upload button:hover {
             background-color: #16a085;
@@ -111,37 +122,189 @@
         .footer-buttons .cancel-button:hover {
             color: #ff6b6b;
         }
+        .series-input {
+            background: #333;
+            border: none;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            width: 100%;
+        }
+        .series-list {
+            background: #1e1e1e;
+            border-radius: 10px;
+            overflow-y: auto;
+            max-height: 200px;
+        }
+        .series-list div {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .series-list div:hover {
+            background: #333;
+        }
+        .file-input {
+            display: none;
+        }
+        .btn-primary{
+            background-color: #1abc9c;
+            border: 0;
+        }
     </style>
 </head>
 <body>
 <div class="post-preview-container">
-    <form action="/writeform" method="post">
-        <div class="thumbnail-upload">
-            <button>썸네일 업로드</button>
+    <!-- multipart/form-data 타입 추가 !! -->
+    <form id="writeForm" action="/writeform/next/step" method="post" th:object="${postCreatedDto2}" enctype="multipart/form-data">
+        <div>
+            <input type="hidden" id="postId" th:field="*{postId}">
+            <input type="hidden" id="visibility" th:field="*{visibility}">
         </div>
-        <textarea class="post-description" rows="3" placeholder="당신의 포스트를 짧게 소개해보세요..."></textarea>
+
+        <div class="thumbnail-upload" style="margin-bottom: 10px;">
+            <img id="thumbnail-preview" th:src="@{/images/default-previewImage.png}"
+                 alt="No image" />
+            <input type="file" th:field="*{previewImage}"
+                    id="thumbnail" class="file-input" accept="image/*" onchange="loadFile(event)">
+<!--            <button type="button" class="btn btn-primary" onclick="document.getElementById('previewImage').click();">썸네일 업로드</button>-->
+            <button type="button" onclick="document.getElementById('thumbnail').click();">썸네일 업로드</button>
+        </div>
+
+        <textarea class="post-description" rows="3" placeholder="당신의 포스트를 짧게 소개해보세요..." th:field="*{subtitle}"></textarea>
+
         <div class="settings-container">
-            <div class="settings-row">
+            <div class="settings-row" style="margin-bottom: 10px;">
                 <div>공개 설정</div>
                 <div>
-                    <button>전체 공개</button>
-                    <button>비공개</button>
+                    <button type="button" onclick="setVisibility(true)">전체 공개</button>
+                    <button type="button" onclick="setVisibility(false)">비공개</button>
                 </div>
             </div>
-            <div class="settings-row">
-                <div>URL 설정</div>
-                <input type="text" value="/@minjiki2/" readonly>
-            </div>
-            <div class="settings-row">
+
+            <div class="settings-row" style="margin-bottom: 10px;">
                 <div>시리즈 설정</div>
-                <button class="series-button">시리즈에 추가하기</button>
+                <button type="button" class="series-button" onclick="openSeriesModal()">시리즈에 추가하기</button>
             </div>
         </div>
-        <div class="footer-buttons">
-            <button class="cancel-button">취소</button>
-            <button>출간하기</button>
+
+        <div class="footer-buttons" style="margin-bottom: 10px;">
+            <button type="button" class="cancel-button">취소</button>
+            <button type="submit">출간하기</button>
         </div>
     </form>
 </div>
+
+<script>
+    function setVisibility(value) {
+        document.getElementById("visibility").value = value;
+    }
+
+    let loadFile = function(event) {
+        let image = document.getElementById('thumbnail-preview');
+        image.src = URL.createObjectURL(event.target.files[0]);
+    };
+
+</script>
+</body>
+</html>
+
+
+<!-- Series Modal -->
+<div id="seriesModal" style="display: none;">
+    <!-- onkeypress : 실제로 글자가 써질 때 이벤트 -->
+    <div class="series-input-container">
+        <input id="seriesInput" class="series-input" type="text" placeholder="새로운 시리즈 이름을 입력하세요" onkeypress="handleKeyPress(event)">
+    </div>
+    <div class="series-list" id="seriesList"></div>
+    <div class="footer-buttons">
+        <button type="button" class="cancel-button" onclick="closeSeriesModal()">취소</button>
+        <button type="button" onclick="selectSeries()">선택하기</button>
+    </div>
+</div>
+
+<script>
+    let seriesList = [];
+
+    // 시리즈 모달을 열 때, 서버에서 시리즈 목록을 가져오는 함수 호출 !
+    function openSeriesModal() {
+        const modal = document.getElementById('seriesModal');
+        modal.style.display = 'block';
+        fetchSeriesList();
+    }
+
+    function closeSeriesModal() {
+        const modal = document.getElementById('seriesModal');
+        modal.style.display = 'none';
+    }
+
+    function fetchSeriesList() {
+        fetch('/api/series')  // 서버에서 시리즈 목록을 가져오는 API 엔드포인트
+            .then(response => response.json())
+            .then(data => {
+                seriesList = data;
+                renderSeriesList();
+            })
+            .catch(error => {
+                console.error('Error fetching series list:', error);
+            });
+    }
+
+    // 시리즈 목록을, 모달에 렌더링한다. 시리즈가 없을경우, '시리즈가 없습니다' 라는 메시지 표시
+    function renderSeriesList() {
+        const listContainer = document.getElementById('seriesList');
+        listContainer.innerHTML = '';
+
+        if (seriesList.length === 0) {
+            const div = document.createElement('div');
+            div.textContent = '시리즈가 없습니다.';
+            listContainer.appendChild(div);
+        }
+        else {
+            seriesList.forEach(series => {
+                const div = document.createElement('div');
+                div.textContent = series.name;  // 시리즈 객체에 'name' 속성이 있다고 가정
+                div.onclick = () => selectSeries(series);
+                listContainer.appendChild(div);
+            });
+        }
+    }
+
+    // 시리즈 이름 입력하고, 엔터누르면 시리즈가 저장되도록
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            const newSeries = event.target.value.trim();
+            if (newSeries) {
+                saveSeries(newSeries);
+                event.target.value = '';
+            }
+        }
+    }
+
+    // 선택한 시리즈를 콘솔에 출력하고, 시리즈 모달을 닫는다.
+    function selectSeries(series) {
+        console.log('Selected series:', series);
+        closeSeriesModal();
+    }
+
+    // 새로운 시리즈를 서버에 저장하고, 리스트를 업데이트
+    function saveSeries(seriesName) {
+        fetch('/api/series', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name: seriesName })
+        })
+            .then(response => response.json())
+            .then(data => {
+                seriesList.push(data);  // 서버에서 반환된 새로운 시리즈 데이터를 추가
+                renderSeriesList();
+                console.log('Series saved:', data);
+            })
+            .catch(error => {
+                console.error('Error saving series:', error);
+            });
+    }
+</script>
 </body>
 </html>

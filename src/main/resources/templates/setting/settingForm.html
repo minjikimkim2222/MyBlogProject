@@ -122,25 +122,35 @@
     <div>
         <form id="profileUploadForm" th:action="@{/users/{id}/profile-image(id=${user.id})}" method="post" enctype="multipart/form-data">
             <div class="form-group">
-                <input id="profileImage" type="file" name="profileImage" class="file-input" onchange="document.getElementById('profileUploadForm').submit();">
-                <button type="button" class="btn btn-primary" onclick="document.getElementById('profileImage').click();">이미지 업로드</button>
+                <!--
+                    onchange 이벤트 -- 사용자가 입력필드값을 변경했을 때, 발생
+                    여기서는, 사용자가 파일입력필드에 파일을 선택하면 onchange 이벤트가 발생해, 지정된 JS 코드가 실행됨 (profileUploadForm 폼을 자동 제출)
+                -->
+                <input id="profileImage" type="file" name="profileImage" class="file-input"
+                       onchange="document.getElementById('profileUploadForm').submit();">
+                <!--
+                    onclick 이벤트 -- 사용자가 요소를 클릭할 때 발생
+                    여기서는 사용자가 버튼을 클릭하면, onclick 이벤트가 발생하고, 지정된 JS 코드 실행
+                    (버튼을 클릭하면, 파일입력필드를 클릭하는 동작 대신함)
+                -->
+                <button type="button" class="btn btn-primary"
+                        onclick="document.getElementById('profileImage').click();">이미지 업로드</button>
             </div>
         </form>
+
+<!--        <script>-->
+<!--            document.getElementById('profileImage').addEventListener('change', function() {-->
+<!--                if (this.files.length > 0) {-->
+<!--                    document.getElementById('profileUploadForm').submit();-->
+<!--                }-->
+<!--            });-->
+<!--        </script>-->
 
         <form id="profileRemoveForm" th:action="@{/users/{id}/profile-image(id=${user.id})}" method="post">
             <input type="hidden" name="_method" value="delete">
             <button type="submit" class="btn btn-secondary">이미지 제거</button>
         </form>
     </div>
-
-
-    <script>
-        document.getElementById('profileImage').addEventListener('change', function() {
-            if (this.files.length > 0) {
-                document.getElementById('profileUploadForm').submit();
-            }
-        });
-    </script>
 
 
     <!-- 벨로그 제목 (읽기 전용) -->
