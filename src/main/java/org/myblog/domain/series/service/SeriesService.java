@@ -15,4 +15,12 @@ public class SeriesService {
     public List<Series> findAllSeries(){
         return seriesRepository.findAll();
     }
+
+    public Series findBySeriesName(String seriesName){
+        return seriesRepository.findBySeriesName(seriesName);
+    }
+
+    public Series save(Series series){
+        return seriesRepository.save(series);
+    }
 }

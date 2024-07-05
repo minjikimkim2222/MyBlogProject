@@ -7,6 +7,8 @@ import org.myblog.domain.post.dto.PostCreatedDto;
 import org.myblog.domain.post.dto.PostCreatedDto2;
 import org.myblog.domain.post.repository.PostRepository;
 import org.myblog.domain.post.service.PostService;
+import org.myblog.domain.series.domain.Series;
+import org.myblog.domain.series.service.SeriesService;
 import org.myblog.domain.tag.domain.Tag;
 import org.myblog.domain.tag.service.TagService;
 import org.myblog.domain.user.domain.UploadFile;
@@ -35,6 +37,7 @@ public class PostController {
     private final TagService tagService;
     private final PostService postService;
     private final FileStore fileStore;
+    private final SeriesService seriesService;
 
     @GetMapping("/writeform")
     public String writeForm(Model model){
@@ -100,10 +103,19 @@ public class PostController {
         post.setBlog(postService.findBlogByUserLoginForm(userLoginForm));
 
         // 시리즈를 선택하지 않을수도 있음. 그냥 단순한 Post 일수도..
-        //log.info("seriesName이 전달되었나요 ?? : {}", postCreatedDto2.getSeriesName());
-        log.info("seriesName 이래도 전달되었나 ?? : {}", seriesName);
+        if (seriesName != null && !seriesName.isEmpty()){
+            Series series = seriesService.findBySeriesName(seriesName);
 
-        // postService.savePost(post); -- 시리즈 저장 이후 해제 !!
+            if (series == null){ // 새로운 시리즈 저장
+                series = new Series();
+                series.setSeriesName(seriesName);
+                seriesService.save(series);
+            }
+
+            post.setSeries(series); // Post - Series 연관관계 설정
+        }
+
+        postService.savePost(post); // post 2차까지 DB에 저장완료
 
         //return "redirect:/@" + userLoginForm.getId() + "/" + [post저장후, 포스트타이틀];
         return "redirect:/";
