@@ -3,6 +3,7 @@ package org.myblog.domain.post.service;
 import lombok.RequiredArgsConstructor;
 import org.myblog.domain.blog.domain.Blog;
 import org.myblog.domain.post.domain.Post;
+import org.myblog.domain.post.exception.PostNotFoundException;
 import org.myblog.domain.post.repository.PostRepository;
 import org.myblog.domain.tag.repository.TagRepository;
 import org.myblog.domain.user.domain.User;
@@ -38,4 +39,15 @@ public class PostService {
 
         return user.get().getBlog();
     }
+
+    public Post findByTitle(String title){
+        Optional<Post> post = postRepository.findByTitle(title);
+
+        if (!post.isPresent()){
+            throw new PostNotFoundException("Post not found with postTitle : " + title);
+        }
+
+        return post.get();
+    }
+
 }

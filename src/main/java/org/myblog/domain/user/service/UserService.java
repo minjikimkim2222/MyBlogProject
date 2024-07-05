@@ -3,9 +3,12 @@ package org.myblog.domain.user.service;
 import lombok.RequiredArgsConstructor;
 import org.myblog.domain.user.domain.User;
 import org.myblog.domain.user.dto.UserLoginForm;
+import org.myblog.domain.user.exception.UserNotFoundException;
 import org.myblog.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +28,16 @@ public class UserService {
     @Transactional(readOnly = true)
     public User findByUsername(String username) {
         return repository.findByUsername(username);
+    }
+
+    public User findByName(String name){
+        Optional<User> user = repository.findByName(name);
+
+        if (!user.isPresent()){
+            throw new UserNotFoundException("User not found with name : " + name);
+        }
+
+        return user.get();
     }
 
     @Transactional(readOnly = true)

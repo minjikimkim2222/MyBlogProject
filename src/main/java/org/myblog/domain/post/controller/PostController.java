@@ -12,6 +12,7 @@ import org.myblog.domain.series.service.SeriesService;
 import org.myblog.domain.tag.domain.Tag;
 import org.myblog.domain.tag.service.TagService;
 import org.myblog.domain.user.domain.UploadFile;
+import org.myblog.domain.user.domain.User;
 import org.myblog.domain.user.dto.UserLoginForm;
 import org.myblog.domain.user.service.UserService;
 import org.myblog.web.file.FileStore;
@@ -23,6 +24,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +42,7 @@ public class PostController {
     private final PostService postService;
     private final FileStore fileStore;
     private final SeriesService seriesService;
+    private final UserService userService;
 
     @GetMapping("/writeform")
     public String writeForm(Model model){
@@ -117,8 +122,30 @@ public class PostController {
 
         postService.savePost(post); // post 2차까지 DB에 저장완료
 
-        //return "redirect:/@" + userLoginForm.getId() + "/" + [post저장후, 포스트타이틀];
-        return "redirect:/";
+        User user = userService.findById(userLoginForm.getId());
+
+        // redirect할 때, username은 변경할 수 있으니까 안 바뀌는 'name' 속성으로 !!
+        String encodedUsername = URLEncoder.encode(user.getName(), StandardCharsets.UTF_8);
+        String encodedPostTitle = URLEncoder.encode(post.getTitle(), StandardCharsets.UTF_8);
+
+        return "redirect:/@" + encodedUsername + "/" + encodedPostTitle;
+    }
+
+    @GetMapping("/@{encodedUsername}/{encodedPostTitle}")
+    public String showPost(@PathVariable String encodedUsername, @PathVariable String encodedPostTitle, Model model){
+        String decodedUsername = URLDecoder.decode(encodedUsername, StandardCharsets.UTF_8);
+        String decodedPostTitle = URLDecoder.decode(encodedPostTitle, StandardCharsets.UTF_8);
+
+        log.info("decodedUsername : {}", decodedUsername);
+        log.info("decodedPostTitle : {}", decodedPostTitle);
+
+        Post post = postService.findByTitle(decodedPostTitle); // post가 null일 경우, 에러 발생시키도록 postService에 설정해둠..
+        User user = userService.findByName(decodedUsername);// 이름만 username이고 넘긴 건 'name' -- 역시 에러 처리 userservice에 설정
+
+        model.addAttribute("post", post);
+        model.addAttribute("user", user);
+
+        return "post/showPost";
     }
 
 }

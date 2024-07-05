@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post View</title>
+    <style>
+        body {
+            background-color: #222;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+        }
+
+        .like-container {
+            position: fixed;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .like-button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            color: #fff;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .like-count {
+            color: #fff;
+            font-size: 18px;
+        }
+
+        .post-container {
+            width: 60%;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .post-header {
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+
+        .post-title {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .post-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .post-author, .post-time {
+            font-size: 0.9em;
+            color: #bbb;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .post-action {
+            cursor: pointer;
+            color: #888;
+        }
+
+        .post-content {
+            padding: 20px 0;
+            border-bottom: 1px solid #444;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .author-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .author-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .author-name {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .author-description {
+            font-size: 0.9em;
+            color: #bbb;
+        }
+
+        .comments-section {
+            padding: 20px 0;
+        }
+
+        .comments-section h2 {
+            margin-bottom: 10px;
+        }
+
+        .comment-input {
+            width: 100%;
+            height: 100px;
+            background-color: #333;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .comment-submit {
+            padding: 10px 20px;
+            background-color: #1e90ff;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        body div {
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="like-container">
+    <button class="like-button">❤</button>
+    <div class="like-count">0</div>
+</div>
+<div class="post-container">
+    <div class="post-header">
+        <h1 class="post-title" th:text="${post.title}">현재 post 제목</h1>
+        <div class="post-meta">
+            <span class="post-author" th:text="${user.name}">user의 name</span>
+            <span class="post-time"
+            th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm')}">가장 최근 포스트 수정시간</span>
+            <div class="post-actions">
+                <span class="post-action">통계</span>
+                <span class="post-action">수정</span>
+                <span class="post-action">삭제</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-content">
+        <div class="author-info">
+            <img src="profile-image-url" alt="Author" class="author-image">
+            <div class="author-details">
+                <span class="author-name">민지</span>
+                <span class="author-description">배운 내용을 바로바로 기록하자!</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="comments-section">
+        <h2>0개의 댓글</h2>
+        <textarea class="comment-input" placeholder="댓글을 작성하세요"></textarea>
+        <button class="comment-submit">댓글 작성</button>
+    </div>
+</div>
+</body>
+</html>
