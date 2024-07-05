@@ -81,7 +81,8 @@ public class PostController {
 
     @PostMapping("/writeform/next/step")
     public String writeFormNextStep(@ModelAttribute(name = "postCreatedDto2") PostCreatedDto2 postCreatedDto2,
-        @SessionAttribute(name = SessionConst.User_Login_Form, required = false)UserLoginForm userLoginForm) throws IOException {
+        @SessionAttribute(name = SessionConst.User_Login_Form, required = false)UserLoginForm userLoginForm,
+        @RequestParam(name = "seriesName")String seriesName) throws IOException {
 
         // 파일 저장
         MultipartFile multipartFile = postCreatedDto2.getPreviewImage();
@@ -98,7 +99,11 @@ public class PostController {
         post.setVisibility(postCreatedDto2.getVisibility());
         post.setBlog(postService.findBlogByUserLoginForm(userLoginForm));
 
-        postService.savePost(post);
+        // 시리즈를 선택하지 않을수도 있음. 그냥 단순한 Post 일수도..
+        //log.info("seriesName이 전달되었나요 ?? : {}", postCreatedDto2.getSeriesName());
+        log.info("seriesName 이래도 전달되었나 ?? : {}", seriesName);
+
+        // postService.savePost(post); -- 시리즈 저장 이후 해제 !!
 
         //return "redirect:/@" + userLoginForm.getId() + "/" + [post저장후, 포스트타이틀];
         return "redirect:/";

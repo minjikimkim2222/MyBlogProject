@@ -11,13 +11,9 @@ public class PostCreatedDto2 {
 
     private MultipartFile previewImage; // 프로필 파일  -- MultipartFile 타입으로 변경 ..
 
- //   private UploadFile previewImageUploadFile; // 프로필 파일 -- previewImageUploadFile
-
     private String subtitle; // 부제목 -- 당신의 포스트를 짧게 소개해보세요..
 
     private Boolean visibility; // 공개글 여부 (true - 공개글, false - 비공개글)
-
-    // 시리즈 엔디티 추가성공 이후, dto2 추가할 것
 
     private Long postId;
 

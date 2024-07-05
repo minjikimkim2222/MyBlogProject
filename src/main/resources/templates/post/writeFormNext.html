@@ -146,10 +146,6 @@
         .file-input {
             display: none;
         }
-        .btn-primary{
-            background-color: #1abc9c;
-            border: 0;
-        }
     </style>
 </head>
 <body>
@@ -159,6 +155,7 @@
         <div>
             <input type="hidden" id="postId" th:field="*{postId}">
             <input type="hidden" id="visibility" th:field="*{visibility}">
+            <input type="hidden" id="selectedSeries" name="seriesName"> <!-- 시리즈 이름을 저장할 hidden input -->
         </div>
 
         <div class="thumbnail-upload" style="margin-bottom: 10px;">
@@ -166,7 +163,6 @@
                  alt="No image" />
             <input type="file" th:field="*{previewImage}"
                     id="thumbnail" class="file-input" accept="image/*" onchange="loadFile(event)">
-<!--            <button type="button" class="btn btn-primary" onclick="document.getElementById('previewImage').click();">썸네일 업로드</button>-->
             <button type="button" onclick="document.getElementById('thumbnail').click();">썸네일 업로드</button>
         </div>
 
@@ -188,10 +184,29 @@
         </div>
 
         <div class="footer-buttons" style="margin-bottom: 10px;">
-            <button type="button" class="cancel-button">취소</button>
+            <button type="button" class="cancel-button" onclick="goBack()">취소</button>
             <button type="submit">출간하기</button>
         </div>
-    </form>
+
+        <!-- Series Modal -->
+        <div id="seriesModal" style="display: none;"> <!-- 처음엔 안보였다가, 위에서 '시리즈에 추가하기' 부분 openSeriesModal로 해당 버튼 누르면 보이게 함 !! -->
+
+            <!-- onkeypress : 실제로 글자가 써질 때 이벤트 -->
+            <div class="series-input-container">
+                <input id="seriesInput" class="series-input" type="text"
+                       placeholder="새로운 시리즈 이름을 입력하세요" onkeypress="handleKeyPress(event)">
+                <button type="button" onclick="addNewSeries()">추가하기</button>
+            </div>
+
+            <div class="series-list" id="seriesList"></div>
+
+            <div class="footer-buttons">
+                <button type="button" class="cancel-button" onclick="closeSeriesModal()">취소</button> <!-- 취소누르면, 해당 모달 안보이게-->
+                <button type="button" onclick="closeSeriesModal()">선택하기</button>
+            </div>
+        </div>
+
+    </form> <!-- form 태그 끝부분 -->
 </div>
 
 <script>
@@ -199,46 +214,31 @@
         document.getElementById("visibility").value = value;
     }
 
+    // 썸네일 업로드 버튼 눌러서 파일추가하면, 해당 파일이 보이게끔
     let loadFile = function(event) {
         let image = document.getElementById('thumbnail-preview');
         image.src = URL.createObjectURL(event.target.files[0]);
     };
 
-</script>
-</body>
-</html>
 
-
-<!-- Series Modal -->
-<div id="seriesModal" style="display: none;">
-    <!-- onkeypress : 실제로 글자가 써질 때 이벤트 -->
-    <div class="series-input-container">
-        <input id="seriesInput" class="series-input" type="text" placeholder="새로운 시리즈 이름을 입력하세요" onkeypress="handleKeyPress(event)">
-    </div>
-    <div class="series-list" id="seriesList"></div>
-    <div class="footer-buttons">
-        <button type="button" class="cancel-button" onclick="closeSeriesModal()">취소</button>
-        <button type="button" onclick="selectSeries()">선택하기</button>
-    </div>
-</div>
-
-<script>
+    /*
+        여기서부터 시리즈 설정 관련 JS
+     */
     let seriesList = [];
 
     // 시리즈 모달을 열 때, 서버에서 시리즈 목록을 가져오는 함수 호출 !
     function openSeriesModal() {
         const modal = document.getElementById('seriesModal');
-        modal.style.display = 'block';
+        modal.style.display = 'block'; // -- none -> block 으로 바꿔서 보이게끔 !!
         fetchSeriesList();
     }
-
     function closeSeriesModal() {
         const modal = document.getElementById('seriesModal');
         modal.style.display = 'none';
     }
 
     function fetchSeriesList() {
-        fetch('/api/series')  // 서버에서 시리즈 목록을 가져오는 API 엔드포인트
+        fetch('/series')  // 서버에서 시리즈 목록을 가져오는 API 엔드포인트 -- GET /series
             .then(response => response.json())
             .then(data => {
                 seriesList = data;
@@ -247,6 +247,17 @@
             .catch(error => {
                 console.error('Error fetching series list:', error);
             });
+    }
+
+    // 시리즈 추가하기 버튼 누르면, 추가한 시리즈도 화면에 렌더링시키기 위해
+    function addNewSeries(){
+        const seriesInput = document.getElementById('seriesInput').value;
+
+        if (seriesInput){
+            seriesList.push(seriesInput);
+            renderSeriesList();
+            document.getElementById('seriesInput').value = ''; // 입력값 초기화
+        }
     }
 
     // 시리즈 목록을, 모달에 렌더링한다. 시리즈가 없을경우, '시리즈가 없습니다' 라는 메시지 표시
@@ -260,50 +271,32 @@
             listContainer.appendChild(div);
         }
         else {
-            seriesList.forEach(series => {
+            seriesList.forEach(seriesName => {
                 const div = document.createElement('div');
-                div.textContent = series.name;  // 시리즈 객체에 'name' 속성이 있다고 가정
-                div.onclick = () => selectSeries(series);
+                div.textContent = seriesName;  // 시리즈 이름을 '텍스트'로 수정
+                div.onclick = () => selectSeries(seriesName);
                 listContainer.appendChild(div);
             });
         }
     }
 
-    // 시리즈 이름 입력하고, 엔터누르면 시리즈가 저장되도록
-    function handleKeyPress(event) {
-        if (event.key === 'Enter') {
-            const newSeries = event.target.value.trim();
-            if (newSeries) {
-                saveSeries(newSeries);
-                event.target.value = '';
-            }
-        }
-    }
-
-    // 선택한 시리즈를 콘솔에 출력하고, 시리즈 모달을 닫는다.
-    function selectSeries(series) {
-        console.log('Selected series:', series);
+    // 사용자가 시리즈를 선택하면, hidden input에 시리즈 이름을 설정하고, 모달을 닫습니다.
+    function selectSeries(seriesName) {
+        document.getElementById('selectedSeries').value = seriesName;
         closeSeriesModal();
     }
 
-    // 새로운 시리즈를 서버에 저장하고, 리스트를 업데이트
-    function saveSeries(seriesName) {
-        fetch('/api/series', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ name: seriesName })
-        })
-            .then(response => response.json())
-            .then(data => {
-                seriesList.push(data);  // 서버에서 반환된 새로운 시리즈 데이터를 추가
-                renderSeriesList();
-                console.log('Series saved:', data);
-            })
-            .catch(error => {
-                console.error('Error saving series:', error);
-            });
+    // input 태그에서 엔터 눌렀을 때, 폼제출 방지하고, 대신 시리즈에 추가하도록 한다.
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            addNewSeries();
+        }
+    }
+
+    // 뒤로가기 버튼
+    function goBack(){
+        history.back();
     }
 </script>
 </body>
