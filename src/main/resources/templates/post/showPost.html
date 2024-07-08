@@ -162,12 +162,15 @@
         </div>
     </div>
 
+    <div>
+        <div class="post-content" th:text="${post.content}"></div>
+    </div>
+
     <div class="post-content">
         <div class="author-info">
             <img src="profile-image-url" alt="Author" class="author-image">
             <div class="author-details">
-                <span class="author-name">민지</span>
-                <span class="author-description">배운 내용을 바로바로 기록하자!</span>
+                <span class="author-name" th:text="${user.username}">유저 닉네임</span>
             </div>
         </div>
     </div>
