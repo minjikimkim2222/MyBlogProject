@@ -1,5 +1,6 @@
 package org.myblog.global.exception;
 
+import org.myblog.domain.comment.exception.CommentNotFoundException;
 import org.myblog.domain.post.exception.PostNotFoundException;
 import org.myblog.domain.user.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -24,5 +25,11 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handlePostNotFoundException(PostNotFoundException ex){
         return ex.getMessage(); // 404 상태코드 + 예외메세지 반환
+    }
+
+    @ExceptionHandler(CommentNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleCommentNotFoundException(CommentNotFoundException ex){
+        return ex.getMessage();
     }
 }

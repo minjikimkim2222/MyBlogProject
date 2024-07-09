@@ -12,4 +12,6 @@ public class CommentResponseDTO {
     private boolean success;
     private String content;
     private LocalDateTime updatedAt;
+    // 댓글 수정하며 추가
+    private Long commentId;
 }
