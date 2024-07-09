@@ -208,7 +208,7 @@
                     여기서도 값을 타임리프로 바인딩해주는 이유는, 기존댓글 id 값 설정 -->
                 <div class="comment" th:attr="data-comment-id=${comment.id}">
                     <!-- -->
-                    <span class="comment-author" th:text="${userSession.name}">작성자</span>
+                    <span class="comment-author" th:text="${comment.authorName}">작성자</span> <!-- comment에 저장된 작성자 이름을 가져와야 함 !!-->
                     <p class="comment-content" th:text="${comment.content}">댓글 내용</p>
                     <div class="comment-actions">
                         <span th:text="${#temporals.format(comment.updatedAt, 'yyyy-MM-dd HH:mm')}">작성 시간</span>

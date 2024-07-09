@@ -9,7 +9,11 @@ import org.myblog.domain.comment.repository.CommentRepository;
 import org.myblog.domain.post.domain.Post;
 import org.myblog.domain.post.exception.PostNotFoundException;
 import org.myblog.domain.post.repository.PostRepository;
+import org.myblog.domain.user.domain.User;
+import org.myblog.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,14 +21,19 @@ import org.springframework.stereotype.Service;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
     public Comment createComment(CommentCreatedDTO commentDTO){
+
         Post post = postRepository.findById(commentDTO.getPostId())
                 .orElseThrow(() -> new PostNotFoundException("post not found with postId : " + commentDTO.getPostId()));
+
+        Optional<User> user = userRepository.findById(commentDTO.getUserId());
 
         Comment comment = new Comment();
         comment.setContent(commentDTO.getContent());
         comment.setPost(post); // comment - post 연관관계 설정 !!
+        comment.setAuthorName(user.get().getName()); // 댓글 작성 당시, 세션 정보 저장 !!
 
         return commentRepository.save(comment);
     }

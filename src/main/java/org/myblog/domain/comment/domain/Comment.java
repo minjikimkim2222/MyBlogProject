@@ -35,5 +35,7 @@ public class Comment {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    private String authorName; // 댓글 작성 당시, 로그인했던 유저닉네임
+
 
 }

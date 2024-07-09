@@ -22,21 +22,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/comments")
 public class CommentController {
     private final CommentService commentService;
-    private final UserService userService;
 
     @PostMapping
     @ResponseBody
     public ResponseEntity<?> createComment(@RequestBody CommentCreatedDTO commentDTO){
-        log.info(" ---- commentDTO : {}", commentDTO);
+        log.info(" commentDTO  : {}", commentDTO);
         Comment comment = commentService.createComment(commentDTO);
-        User user = userService.findById(commentDTO.getUserId());
 
         //log.info("comment : {}", comment.getId());
 
         if (comment != null){ // comment, post 저장 성공
             CommentResponseDTO commentResponseDTO =
                     new CommentResponseDTO(true, comment.getContent(), comment.getUpdatedAt(), comment.getId()
-                    , user.getName());
+                    , comment.getAuthorName()); // 저장된 Comment 엔디티에서 authorName 받아오기..
 
             return ResponseEntity.ok(commentResponseDTO);
         } else {
