@@ -7,7 +7,9 @@ import org.myblog.domain.comment.dto.CommentCreatedDTO;
 import org.myblog.domain.comment.dto.CommentResponseDTO;
 import org.myblog.domain.comment.dto.CommentUpdatedDTO;
 import org.myblog.domain.comment.service.CommentService;
+import org.myblog.domain.user.domain.User;
 import org.myblog.domain.user.dto.UserLoginForm;
+import org.myblog.domain.user.service.UserService;
 import org.myblog.web.login.SessionConst;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,22 +22,26 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/comments")
 public class CommentController {
     private final CommentService commentService;
+    private final UserService userService;
 
     @PostMapping
     @ResponseBody
     public ResponseEntity<?> createComment(@RequestBody CommentCreatedDTO commentDTO){
-        // log.info("commentDTO : {}", commentDTO);
+        log.info(" ---- commentDTO : {}", commentDTO);
         Comment comment = commentService.createComment(commentDTO);
-        log.info("comment : {}", comment.getId());
+        User user = userService.findById(commentDTO.getUserId());
+
+        //log.info("comment : {}", comment.getId());
 
         if (comment != null){ // comment, post 저장 성공
             CommentResponseDTO commentResponseDTO =
-                    new CommentResponseDTO(true, comment.getContent(), comment.getUpdatedAt(), comment.getId());
+                    new CommentResponseDTO(true, comment.getContent(), comment.getUpdatedAt(), comment.getId()
+                    , user.getName());
 
             return ResponseEntity.ok(commentResponseDTO);
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new CommentResponseDTO(false, null, null, null));
+                    .body(new CommentResponseDTO(false, null, null, null, null));
         }
     }
 

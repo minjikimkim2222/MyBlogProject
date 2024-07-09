@@ -132,7 +132,8 @@ public class PostController {
     }
 
     @GetMapping("/@{encodedUsername}/{encodedPostTitle}")
-    public String showPost(@PathVariable String encodedUsername, @PathVariable String encodedPostTitle, Model model){
+    public String showPost(@PathVariable String encodedUsername, @PathVariable String encodedPostTitle, Model model,
+                           @SessionAttribute(name = SessionConst.User_Login_Form, required = false)UserLoginForm userLoginForm){
         String decodedUsername = URLDecoder.decode(encodedUsername, StandardCharsets.UTF_8);
         String decodedPostTitle = URLDecoder.decode(encodedPostTitle, StandardCharsets.UTF_8);
 
@@ -140,10 +141,14 @@ public class PostController {
         log.info("decodedPostTitle : {}", decodedPostTitle);
 
         Post post = postService.findByTitle(decodedPostTitle); // post가 null일 경우, 에러 발생시키도록 postService에 설정해둠..
-        User user = userService.findByName(decodedUsername);// 이름만 username이고 넘긴 건 'name' -- 역시 에러 처리 userservice에 설정
+        User userBlog = userService.findByName(decodedUsername);// 이름만 username이고 넘긴 건 'name' -- 역시 에러 처리 userservice에 설정
+        User userSession = userService.findById(userLoginForm.getId());
 
-        model.addAttribute("post", post);
-        model.addAttribute("user", user);
+
+        model.addAttribute("post", post); // 저장된 post 정보
+        model.addAttribute("userBlog", userBlog); // 블로그에 매핑된 유저정보
+        model.addAttribute("userSession", userSession); // 현재 로그인한 유저정보
+
 
         return "post/showPost";
     }

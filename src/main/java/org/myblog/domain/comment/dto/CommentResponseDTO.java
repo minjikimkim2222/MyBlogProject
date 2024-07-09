@@ -14,4 +14,6 @@ public class CommentResponseDTO {
     private LocalDateTime updatedAt;
     // 댓글 수정하며 추가
     private Long commentId;
+
+    private String authorName; // 댓글 작성 당시, 로그인한 유저닉네임 !!
 }

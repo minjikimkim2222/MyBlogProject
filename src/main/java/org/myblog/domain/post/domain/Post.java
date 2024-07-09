@@ -63,6 +63,8 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Like> likes;
 
+    private int likeCount; // 추가한 필드 -- 좋아요 기능
+
     @ManyToMany
     @JoinTable( // posts - tags 다대다 -- Post가 연관관계 주인
         name = "post_tags",

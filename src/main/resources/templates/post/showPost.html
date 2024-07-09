@@ -160,16 +160,19 @@
     </style>
 </head>
 <body>
+
+<!-- 좋아요 버튼 -->
+
 <div class="like-container">
-    <button class="like-button">❤</button>
-    <div class="like-count">0</div>
+    <button class="like-button" data-liked="false" id="like-button">❤</button>
+    <div class="like-count" id="like-count" th:text="${post.likeCount}">0</div>
 </div>
 
 <div class="post-container">
     <div class="post-header">
         <h1 class="post-title" th:text="${post.title}">현재 post 제목</h1>
         <div class="post-meta">
-            <span class="post-author" th:text="${user.name}">user의 name</span>
+            <span class="post-author" th:text="${userBlog.name}">Blog에 매핑된 유저정보 -- name</span>
             <span class="post-time"
             th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm')}">가장 최근 포스트 수정시간</span>
             <div class="post-actions">
@@ -188,7 +191,7 @@
         <div class="author-info">
             <img src="profile-image-url" alt="Author" class="author-image">
             <div class="author-details">
-                <span class="author-name" th:text="${user.username}">유저 닉네임</span>
+                <span class="author-name" th:text="${userBlog.username}">유저Blog 닉네임</span>
             </div>
         </div>
     </div>
@@ -204,7 +207,8 @@
                 <!-- 댓글 요소에 data-comment-id 속성을 추가해, 댓글을 식별할 수 있게 한다.
                     여기서도 값을 타임리프로 바인딩해주는 이유는, 기존댓글 id 값 설정 -->
                 <div class="comment" th:attr="data-comment-id=${comment.id}">
-                    <span class="comment-author" th:text="${user.name}">작성자</span>
+                    <!-- -->
+                    <span class="comment-author" th:text="${userSession.name}">작성자</span>
                     <p class="comment-content" th:text="${comment.content}">댓글 내용</p>
                     <div class="comment-actions">
                         <span th:text="${#temporals.format(comment.updatedAt, 'yyyy-MM-dd HH:mm')}">작성 시간</span>
@@ -218,18 +222,20 @@
 
     <!-- comments 엔디티로 postId를 보내기 위해, input hidden 필드 추가-->
     <input type="hidden" id="post-id" th:value="${post.id}">
-    <input type="hidden" id="user-name" th:value="${user.name}">
+    <input type="hidden" id="user-id" th:value="${userSession.id}">
 </div>
 
 <script>
+    // '댓글 작성' 버튼 누르면, 댓글 '생성' 추가
     document.querySelector('.comment-submit').addEventListener('click', function() {
         const content = document.querySelector('.comment-input').value;
         const postId = document.getElementById('post-id').value;
-        const userName = document.getElementById('user-name').value;
+        const userId = document.getElementById('user-id').value;
 
         const payload = {
             content: content,
-            postId: postId
+            postId: postId,
+            userId : userId // 댓글 작성할 때, 로그인한 유저정보(세션정보)를 알기 위해 !!
         };
 
         // POST /comments - 댓글 추가 api request 보내기
@@ -250,7 +256,10 @@
             })
             .then(data => {
                 console.log('Parsed data:', data);
+
                 if (data.success) {
+
+                    alert('현재 로그인한 유저 닉네임 ' + data.authorName);
 
                     //alert('전달받은 commentId : ' + data.commentId);
 
@@ -263,7 +272,7 @@
                     newComment.setAttribute('data-comment-id', data.commentId);
 
                     newComment.innerHTML = `
-                    <span class="comment-author">${userName}</span>
+                    <span class="comment-author">${data.authorName}</span>
                     <p class="comment-content">${data.content}</p>
                     <div class="comment-actions">
                         <span>${new Date(data.updatedAt).toLocaleString()}</span>
@@ -351,6 +360,44 @@
         }
 
     }); // 댓글 수정 및 삭제
+
+
+    // 좋아요 기능
+    // -- 좋아요 버튼 눌렀을 때 서버에 요청을 보내고, 응답에 따라 좋아요수 업데이트
+    document.getElementById('like-button').addEventListener('click', function() {
+        const postId = document.getElementById('post-id').value;
+        const likeButton = document.getElementById('like-button');
+        const likeCount = document.getElementById('like-count');
+
+        const payload = {
+            postId: postId
+        };
+
+        fetch('/likes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(response => response.json())
+            .then(data => {
+
+                alert('여기는 오는거임??');
+                alert('likeCount : ' + data.likeCount);
+                alert('liked : '+ data.liked);
+
+                likeButton.setAttribute('data-liked', data.liked); // 좋아요 토글 업데이트
+                likeCount.innerText = data.likeCount; // 좋아요 개수
+
+                if (data.liked) { // 좋아요 상태 !!
+                    likeButton.innerText = '❤';
+                } else { // 좋아요 취소 상태 !!
+                    likeButton.innerText = '💔';
+                }
+            })
+            .catch(error => console.error('Fetch error:', error));
+    });
 
 
 </script>
