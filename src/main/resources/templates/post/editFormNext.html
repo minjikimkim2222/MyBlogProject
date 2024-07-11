@@ -151,19 +151,21 @@
 <body>
 <div class="post-preview-container">
     <!-- multipart/form-data 타입 추가 !! -->
-    <form id="writeForm" action="/writeform/next/step" method="post" th:object="${postCreatedDto2}" enctype="multipart/form-data">
+    <form id="writeForm" th:action="@{/editForm/next/step/{postId}(postId=${postId})}" method="post" th:object="${postUpdatedDto2}" enctype="multipart/form-data">
         <div>
-            <input type="hidden" id="postId" th:field="*{postId}">
+            <input type="hidden" id="postId" th:value="${postId}">
             <input type="hidden" id="visibility" th:field="*{visibility}">
-            <input type="hidden" id="selectedSeries" name="seriesName"> <!-- 시리즈 이름을 저장할 hidden input -->
+           <!-- <input type="hidden" id="selectedSeries" name="seriesName"> 시리즈 이름을 저장할 hidden input -->
+            <input type="hidden" id="selectedSeries" th:field="*{seriesName}">
         </div>
 
         <div class="thumbnail-upload" style="margin-bottom: 10px;">
-            <img id="thumbnail-preview" th:src="@{/images/default-previewImage.png}"
-                 alt="No image" />
+            <!-- post에 저장된, 기존 이미지 불러오게끔 !! ; id 추가 -->
+            <img id="thumbnail-preview" th:src="${postUpdatedDto2.storeFileName != null  ? '/images/' + postUpdatedDto2.storeFileName : '/images/default-previewImage.png'}"
+                 alt="preview - Image" />
 
             <input type="file" th:field="*{previewImage}"
-                    id="thumbnail" class="file-input" accept="image/*" onchange="loadFile(event)">
+                    id="thumbnail" class="file-input" accept="image/*" onchange="loadFile(event)"> <!-- 파일이 선택될 때, loadFile 함수를 호출한다.. -->
 
             <button type="button" onclick="document.getElementById('thumbnail').click();">썸네일 업로드</button>
         </div>
@@ -181,7 +183,11 @@
 
             <div class="settings-row" style="margin-bottom: 10px;">
                 <div>시리즈 설정</div>
+                <!-- post 수정 2차 -- 현재 불러온 post에 시리즈가 있는지 없는지 출력 -->
+                <span id="currentSeries" th:text="${postUpdatedDto2.seriesName != null ? postUpdatedDto2.seriesName : '선택된 시리즈 없음'}"></span>
+
                 <button type="button" class="series-button" onclick="openSeriesModal()">시리즈에 추가하기</button>
+
             </div>
         </div>
 
@@ -284,7 +290,11 @@
 
     // 사용자가 시리즈를 선택하면, hidden input에 시리즈 이름을 설정하고, 모달을 닫습니다.
     function selectSeries(seriesName) {
+
         document.getElementById('selectedSeries').value = seriesName;
+        document.getElementById('currentSeries').innerText = seriesName;
+
+
         closeSeriesModal();
     }
 

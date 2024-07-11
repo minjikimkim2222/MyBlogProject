@@ -157,6 +157,14 @@
             margin-bottom: 10px;
             margin-top: 10px;
         }
+
+        img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid white;
+            margin-right: 20px;
+        }
     </style>
 </head>
 <body>
@@ -176,8 +184,7 @@
             <span class="post-time"
             th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm')}">가장 최근 포스트 수정시간</span>
             <div class="post-actions">
-                <span class="post-action">통계</span>
-                <span class="post-action">수정</span>
+                <button class="post-edit-submit">수정</button>
                 <span class="post-action">삭제</span>
             </div>
         </div>
@@ -189,7 +196,8 @@
 
     <div class="post-content">
         <div class="author-info">
-            <img src="profile-image-url" alt="Author" class="author-image">
+            <img th:src="${userBlog.profileFile != null  ? '/images/' + userBlog.profileFile.storeFileName : '/images/default-profile.png'}"
+                 alt="Profile Image" />
             <div class="author-details">
                 <span class="author-name" th:text="${userBlog.username}">유저Blog 닉네임</span>
             </div>
@@ -259,7 +267,7 @@
 
                 if (data.success) {
 
-                    alert('현재 로그인한 유저 닉네임 ' + data.authorName);
+                    //alert('현재 로그인한 유저 닉네임 ' + data.authorName);
 
                     //alert('전달받은 commentId : ' + data.commentId);
 
@@ -383,9 +391,9 @@
             .then(response => response.json())
             .then(data => {
 
-                alert('여기는 오는거임??');
-                alert('likeCount : ' + data.likeCount);
-                alert('liked : '+ data.liked);
+                //alert('여기는 오는거임??');
+                //alert('likeCount : ' + data.likeCount);
+                //alert('liked : '+ data.liked);
 
                 likeButton.setAttribute('data-liked', data.liked); // 좋아요 토글 업데이트
                 likeCount.innerText = data.likeCount; // 좋아요 개수
@@ -399,6 +407,14 @@
             .catch(error => console.error('Fetch error:', error));
     });
 
+    // post '수정' 기능
+    // ** fetch로 GET 요청 보내면, 비동기적으로 데이터를 받아올수는 있지만, 브라우저의 현재페이지를 업데이트하거나 리다이렉트하는 기능은 없기에..
+    // 바로 버튼 누르면 요청 redirect로 보내게 했다 !!
+    document.querySelector('.post-edit-submit').addEventListener('click', function() {
+        const postId = document.getElementById('post-id').value;
+
+        window.location.href = `/editForm/${postId}`;
+    });
 
 </script>
 </body>

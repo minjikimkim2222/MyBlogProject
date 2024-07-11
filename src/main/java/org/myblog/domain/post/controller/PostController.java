@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.myblog.domain.post.domain.Post;
 import org.myblog.domain.post.dto.PostCreatedDto;
 import org.myblog.domain.post.dto.PostCreatedDto2;
+import org.myblog.domain.post.dto.PostUpdatedDto;
+import org.myblog.domain.post.dto.PostUpdatedDto2;
 import org.myblog.domain.post.repository.PostRepository;
 import org.myblog.domain.post.service.PostService;
 import org.myblog.domain.series.domain.Series;
@@ -99,7 +101,6 @@ public class PostController {
             previewImage = fileStore.storeFile(multipartFile);
         }
 
-
         // DB에 저장
         Post post = postService.findById(postCreatedDto2.getPostId());
         post.setPreviewImage(previewImage);
@@ -131,14 +132,15 @@ public class PostController {
         return "redirect:/@" + encodedUsername + "/" + encodedPostTitle;
     }
 
+    // 만들어진 Post 엔디티 보여주는 화면
     @GetMapping("/@{encodedUsername}/{encodedPostTitle}")
     public String showPost(@PathVariable String encodedUsername, @PathVariable String encodedPostTitle, Model model,
                            @SessionAttribute(name = SessionConst.User_Login_Form, required = false)UserLoginForm userLoginForm){
         String decodedUsername = URLDecoder.decode(encodedUsername, StandardCharsets.UTF_8);
         String decodedPostTitle = URLDecoder.decode(encodedPostTitle, StandardCharsets.UTF_8);
 
-        log.info("decodedUsername : {}", decodedUsername);
-        log.info("decodedPostTitle : {}", decodedPostTitle);
+//        log.info("decodedUsername : {}", decodedUsername);
+//        log.info("decodedPostTitle : {}", decodedPostTitle);
 
         Post post = postService.findByTitle(decodedPostTitle); // post가 null일 경우, 에러 발생시키도록 postService에 설정해둠..
         User userBlog = userService.findByName(decodedUsername);// 이름만 username이고 넘긴 건 'name' -- 역시 에러 처리 userservice에 설정
@@ -153,5 +155,114 @@ public class PostController {
         return "post/showPost";
     }
 
+    // post 수정 폼 요청
+    @GetMapping("/editForm/{postId}")
+    public String editForm(Model model, @PathVariable Long postId){
+        Post post = postService.findById(postId);
 
+        PostUpdatedDto postUpdatedDto = new PostUpdatedDto();
+        postUpdatedDto.setTitle(post.getTitle());
+        postUpdatedDto.setContent(post.getContent());
+        postUpdatedDto.setTags(post.getTags().stream().map(Tag::getTagName).collect(Collectors.toList()));
+        postUpdatedDto.setPublished(post.getPublished());
+
+        model.addAttribute("postUpdatedDto", postUpdatedDto);
+        model.addAttribute("postId", postId);
+        return "post/editForm";
+    }
+
+    @PostMapping("/editForm/{postId}")
+    public String editFormNext(@PathVariable Long postId, @ModelAttribute PostUpdatedDto postUpdatedDto){
+
+        // 1. JPA는 해당 ID를 가진 엔디티를, 영속성 컨텍스트로 가져오기에, 해당 post는 영속화상태가 됨!!
+        Post post = postService.findById(postId);
+
+        // 2. 조회된 Post 엔디티의 필드를 업데이트 !
+        post.setTitle(postUpdatedDto.getTitle());
+        post.setContent(postUpdatedDto.getContent());
+        post.setPublished(postUpdatedDto.getPublished());
+
+        // 수정한 태그 리스트를 받고, 업데이트 (tagService::saveTagByName -- 이미 태그 있다면 기존태그반환, 없어야 새로운 태그 엔디티 생성)
+        List<String> updatedTagNames = postUpdatedDto.getTags();
+        List<Tag> updatedTags = updatedTagNames.stream()
+                .map(tagService::saveTagByName)
+                .collect(Collectors.toList());
+        post.setTags(updatedTags); // post - tags 연관관계 설정
+
+        log.info("1차 수정 적용 post :: {}", post);
+        // 3. 업데이트된 Post 엔디티 저장
+        postService.savePost(post);
+
+        return "redirect:/editForm/next/step/" + post.getId(); // -- 2차 post 수정 폼으로 redirect
+    }
+
+    @GetMapping("/editForm/next/step/{postId}")
+    public String editFormNextStep(@PathVariable Long postId, Model model){
+        Post post = postService.findById(postId);
+        PostUpdatedDto2 postUpdatedDto2 = new PostUpdatedDto2();
+
+        postUpdatedDto2.setSubtitle(post.getSubtitle());
+        postUpdatedDto2.setVisibility(post.getVisibility());
+        if (post.getPreviewImage() != null) {
+            postUpdatedDto2.setStoreFileName(post.getPreviewImage().getStoreFileName()); // -- 이미 storeFile명이 존재한다면, 저장된 파일이미지 띄워야하니깐요
+        }
+        // post가 시리즈에 속하지 않을수도 있음 !
+        String seriesName = post.getSeries().getSeriesName();
+        if (seriesName != null) {
+            postUpdatedDto2.setSeriesName(seriesName); // 시리즈가 있어야, 해당 값으로 채워짐..
+        }
+
+        log.info("1차 edit 상태 ::: postUpdatedDto2 : {}", postUpdatedDto2);
+
+        model.addAttribute("postUpdatedDto2", postUpdatedDto2);
+        model.addAttribute("postId", postId);
+
+        return "post/editFormNext";
+    }
+
+    @PostMapping("/editForm/next/step/{postId}")
+    public String editFormNextStep(@PathVariable Long postId, @ModelAttribute PostUpdatedDto2 postUpdatedDto2,
+                                   @SessionAttribute(name = SessionConst.User_Login_Form, required = false)UserLoginForm userLoginForm) throws IOException {
+        log.info("최종 2차수정된 post ::: {}", postUpdatedDto2);
+
+        // 파일 저장
+        MultipartFile multipartFile = postUpdatedDto2.getPreviewImage();
+        UploadFile previewImage = null;
+
+        if (multipartFile != null && !multipartFile.isEmpty()){
+            previewImage = fileStore.storeFile(multipartFile);
+        }
+
+        // DB에 저장
+        Post post = postService.findById(postId);
+        post.setPreviewImage(previewImage);
+        post.setSubtitle(postUpdatedDto2.getSubtitle());
+        post.setVisibility(postUpdatedDto2.getVisibility());
+
+        // 시리즈
+        String seriesName = postUpdatedDto2.getSeriesName();
+        if (seriesName != null && !seriesName.isEmpty()){
+            Series series = seriesService.findBySeriesName(seriesName);
+
+            if (series == null){ // 시리즈 없으면, 만들기
+                series = new Series();
+                series.setSeriesName(seriesName);
+                seriesService.save(series); // 새로운 시리즈 DB에 저장
+            }
+
+            post.setSeries(series); // post - series 연관관계 설정..
+        }
+
+
+        // 수정된 post까지 DB에 저장
+        Post updatedPost = postService.savePost(post);
+
+        User user = userService.findById(userLoginForm.getId());
+
+        // redirect를 위한 url 인코딩
+        String encodedUsername = URLEncoder.encode(user.getName(), StandardCharsets.UTF_8);
+        String encodedPostTitle = URLEncoder.encode(updatedPost.getTitle(), StandardCharsets.UTF_8);
+
+        return "redirect:/@" + encodedUsername + "/" + encodedPostTitle;
+    }
 }

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>글쓰기 폼</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .editor-title {
+            font-size: 2rem;
+            border: none;
+            background: none;
+            color: white;
+            margin-bottom: 10px;
+        }
+        .editor-title::placeholder {
+            color: #555;
+        }
+        .editor-tags {
+            font-size: 1rem;
+            border: none;
+            background: none;
+            color: #bbb;
+            margin-bottom: 20px;
+        }
+        .editor-tags::placeholder {
+            color: #555;
+        }
+        .editor-content {
+            flex: 1;
+            border: none;
+            background: none;
+            color: white;
+            font-size: 1rem;
+        }
+        .editor-content::placeholder {
+            color: #555;
+        }
+        .editor-footer {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #121212;
+            border-top: 1px solid #333;
+        }
+        .editor-footer button {
+            background: #1abc9c;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .editor-footer button:hover {
+            background: #16a085;
+        }
+        .editor-footer .back-button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 10px 20px;
+        }
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .tag-item {
+            background: #1abc9c;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+        }
+        .tag-item button {
+            background: none;
+            border: none;
+            color: white;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="editor-container">
+    <form id="postForm" th:action="@{/editForm/{postId}(postId=${postId})}" th:object="${postUpdatedDto}" method="post">
+        <input type="text" class="editor-title" placeholder="제목을 입력하세요" name="title"
+               th:field="*{title}" required>
+
+        <input type="text" class="editor-tags" id="tagInput" placeholder="태그를 입력하세요">
+        <div class="tags-container" id="tagsContainer"></div>
+
+        <textarea style="width: 100%; height: 400px" class="editor-content" placeholder="당신의 이야기를 적어보세요..."
+                  name="content" th:field="*{content}" required></textarea>
+
+        <input type="hidden" id="published" name="published" th:field="*{published}" value="false">
+
+        <!-- !! hidden input 필드로 설정하고, 폼제출 시 JS를 사용해, 'JSON 문자열'로 변환한 태그배열을, 이 필드에 할당 !! -->
+        <input type="hidden" id="tags" name="tags" th:field="*{tags}">
+
+        <div class="editor-footer">
+            <button class="back-button" type="button" th:onclick="|location.href='@{/myblog}'|">나가기</button>
+            <div>
+                <button type="button" id="saveDraftButton">임시저장</button>
+                <button type="submit" id="publishButton">수정하기</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    // DOM 요소 초기화 & 이벤트 리스너 설정
+    document.addEventListener('DOMContentLoaded', function () {
+        // 필요한 DOM 요소들 변수에 할당
+        const tagInput = document.getElementById('tagInput'); // 태그 입력받는 input 필드
+        const tagsContainer = document.getElementById('tagsContainer'); // 입력된 태그들을 표시하는 태그컨테이너
+        const publishedInput = document.getElementById('published'); // 임시저장여부를 나타낼 hidden input 필드
+        const tagsInput = document.getElementById('tags'); // 태그들을 JSON 형식으로 서버로 전송하기 위해 hidden input 필드
+
+        const tagsInitialized = document.getElementById('tags').value;
+
+        // 서버에서 전달된 태그 리스트로 초기화
+        let tags = [];
+
+        // 태그 문자열을 ',' 구분자로 나눠서 배열에 저장
+        tags = tagsInitialized.split(',');
+
+
+        // 저장된 태그를 화면에 표시함
+        tags.forEach(tag => addTag(tag));
+
+        tagInput.addEventListener('click', function () {
+            alert("태그는 엔터키로 구분합니다.");
+        });
+
+        // tagInput에서 'Enter'키 눌렀을 때, 태그 추가
+        tagInput.addEventListener('keydown', function (event) {
+            if (event.isComposing) return; // 한글 입력 중인 경우 이벤트 무시
+
+            if (event.key === 'Enter') {
+                event.preventDefault(); // 폼 제출과 같은 기본동작 방지
+                const tag = tagInput.value.trim(); // 입력된 태그공백 제거
+
+                if (tags.includes(tag)){
+                    alert("이미 입력한 태그입니다.");
+                }
+
+                if (tag && !tags.includes(tag)) { // 이미 존재하는 태그인지 확인
+                    tags.push(tag); // 태그를 배열에 추가
+                    addTag(tag); // 태그를 화면에 표시
+                    tagInput.value = ''; // 입력필드 비우기
+                }
+            }
+        });
+
+
+        // 새롭게 add된 태그를, tagsContainer에 추가하는 함수 (x 버튼 누르면 삭제되게끔하기도)
+        function addTag(tag) {
+            // 태그를 표시하는 div 요소
+            const tagItem = document.createElement('div');
+            tagItem.className = 'tag-item';
+            tagItem.textContent = tag; // <div class=tag-item>tag</div>
+
+            // 태그 제거 버튼
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'x';
+            removeButton.addEventListener('click', function () {
+                tagsContainer.removeChild(tagItem);
+                tags = tags.filter(t => t !== tag);
+
+            }); // 태그 제거하는 이벤트리스너
+
+            tagItem.appendChild(removeButton);
+            tagsContainer.appendChild(tagItem); // tagContainer에 태그 추가함
+        }
+
+        // 임시저장버튼클릭시, 이벤트리스너
+        document.getElementById('saveDraftButton').addEventListener('click', function () {
+            publishedInput.value = 'false'; // published 값을 false로 설정
+
+            tagsInput.value = tags.join(','); // JSON 문자열 대신 콤마로 구분된 문자열 반환
+
+            document.getElementById('postForm').submit(); // 폼 제출
+        });
+
+        document.getElementById('publishButton').addEventListener('click', function () {
+            publishedInput.value = 'true';
+
+            tagsInput.value = tags.join(',');
+        });
+
+        // 폼이 제출될 때, 이벤트리스너
+        document.getElementById('postForm').addEventListener('submit', function () {
+            tagsInput.value = tags.join(',');
+
+        });
+    });
+</script>
+</body>
+</html>
