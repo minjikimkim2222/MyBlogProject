@@ -50,4 +50,14 @@ public class PostService {
         return post.get();
     }
 
+    public void deletePost(Post post){
+        Post findPost = findById(post.getId());
+
+        if (findPost == null){
+            throw new PostNotFoundException("Post not found with postId : " + post.getId() + " ,cannot delete");
+        }
+
+        postRepository.delete(post);
+    }
+
 }

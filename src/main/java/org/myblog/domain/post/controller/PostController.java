@@ -19,6 +19,7 @@ import org.myblog.domain.user.dto.UserLoginForm;
 import org.myblog.domain.user.service.UserService;
 import org.myblog.web.file.FileStore;
 import org.myblog.web.login.SessionConst;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -264,5 +265,18 @@ public class PostController {
         String encodedPostTitle = URLEncoder.encode(updatedPost.getTitle(), StandardCharsets.UTF_8);
 
         return "redirect:/@" + encodedUsername + "/" + encodedPostTitle;
+    }
+
+    @DeleteMapping("/posts/{postId}")
+    @ResponseBody
+    public ResponseEntity<?> deletePost(@PathVariable Long postId){
+        Post post = postService.findById(postId);
+
+        if (post != null){
+            postService.deletePost(post);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found with postId: " + postId);
     }
 }

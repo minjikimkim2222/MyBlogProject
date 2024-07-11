@@ -184,8 +184,8 @@
             <span class="post-time"
             th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm')}">가장 최근 포스트 수정시간</span>
             <div class="post-actions">
-                <button class="post-edit-submit">수정</button>
-                <span class="post-action">삭제</span>
+                <span class="post-edit-submit">수정</span>
+                <span class="post-edit-delete">삭제</span>
             </div>
         </div>
     </div>
@@ -415,6 +415,29 @@
 
         window.location.href = `/editForm/${postId}`;
     });
+
+    // post '삭제' 기능
+    document.querySelector('.post-edit-delete').addEventListener('click', function() {
+        // 경고창으로 삭제 여부 확인
+        if (confirm('정말 삭제하시겠습니까?')) {
+            const postId = document.getElementById('post-id').value;
+
+            fetch(`/posts/${postId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(data => {
+                    // 삭제 요청이 성공하면 루트 경로로 리디렉션
+
+                    window.location.href = `/`;
+
+                })
+                .catch(error => console.error('Fetch error:', error));
+        }
+    });
+
 
 </script>
 </body>
