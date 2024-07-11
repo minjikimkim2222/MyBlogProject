@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Minji's Blog</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .profile img {
+            border-radius: 50%;
+            margin-right: 20px;
+        }
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .follow-info {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .follow-info span {
+            color: #cccccc;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .navbar a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px;
+        }
+        .navbar a.active {
+            border-bottom: 2px solid #00FF00;
+        }
+        .sidebar {
+            width: 250px;
+            margin-right: 20px;
+        }
+        .tags {
+            margin-bottom: 20px;
+        }
+        .tag-list {
+            list-style: none;
+            padding: 0;
+        }
+        .tag-list li {
+            margin-bottom: 10px;
+        }
+        .tag-list a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+        .content {
+            flex: 1;
+        }
+        .posts {
+            display: flex;
+            flex-direction: column;
+        }
+        .post {
+            background-color: #2e2e2e;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        body div {
+            margin-bottom: 10px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- 사이드바 -->
+    <div class="sidebar">
+        <!-- 프로필 섹션 -->
+        <div class="profile">
+            <img th:src="${user.profileFile != null  ? '/images/' + user.profileFile.storeFileName : '/images/default-profile.png'}"
+                 alt="Profile Image" width="50" height="50"/>
+            <div class="profile-info">
+                <h1 th:text="${user.name}"></h1>
+                <div class="follow-info">
+                    <span>팔로워 <span th:text="${followersCount}">0</span></span>
+                    <span>팔로잉 <span th:text="${followingCount}">0</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 네비게이션 바 -->
+        <div class="navbar">
+            <a href="#posts" id="posts-tab" class="active" onclick="showSection('posts')">글</a>
+            <a href="#series" id="series-tab" onclick="showSection('series')">시리즈</a>
+        </div>
+
+        <!-- 태그 목록 -->
+        <div class="tags">
+            <h3>태그 목록</h3>
+            <ul class="tag-list">
+                <li th:each="post : ${posts}">
+                    <ul th:each="tag : ${post.tags}">
+                        <li>
+                            <a th:href="@{/tags/{tag} (tag=${tag.tagName})}"><span th:text="${tag.tagName}">Tag Name
+                                <!--(<span th:text="${tag.count}">0</span>)--></span></a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 메인 콘텐츠 -->
+    <div class="content">
+        <!-- 글 섹션  -->
+        <div class="posts" id="posts-section">
+            <div class="post" th:each="post : ${posts}">
+                <a th:href="@{'/@' + ${encodedUsername} + '/' + ${post.title}}">
+                    <h2 th:text="${post.title}">포스트 제목</h2>
+                </a>
+<!--                <h2 th:text="${post.title}">포스트 제목</h2>-->
+                <p th:text="${post.subtitle}">포스트 부제목</p>
+                <p th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd')}">포스트 수정시간</p>
+                <p>❤ <span th:text="${post.likeCount}"></span></p>
+            </div>
+        </div>
+
+        <!-- 시리즈 섹션 -->
+        <div id="series-section" style="display: none;">
+            <!-- 시리즈 관련 콘텐츠 -->
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function showSection(section) {
+        document.getElementById('posts-section').style.display = section === 'posts' ? 'block' : 'none';
+        document.getElementById('series-section').style.display = section === 'series' ? 'block' : 'none';
+
+        document.getElementById('posts-tab').classList.toggle('active', section === 'posts');
+        document.getElementById('series-tab').classList.toggle('active', section === 'series');
+    }
+</script>
+</body>
+</html>

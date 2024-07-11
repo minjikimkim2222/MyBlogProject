@@ -2,6 +2,7 @@ package org.myblog.domain.post.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.myblog.domain.blog.domain.Blog;
 import org.myblog.domain.post.domain.Post;
 import org.myblog.domain.post.dto.PostCreatedDto;
 import org.myblog.domain.post.dto.PostCreatedDto2;
@@ -278,5 +279,23 @@ public class PostController {
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found with postId: " + postId);
+    }
+
+
+    // 내 벨로그 화면
+    @GetMapping("/@{encodedUsername}/posts")
+    public String showMyVelogPage(@PathVariable String encodedUsername, Model model,
+                                  @SessionAttribute(name = SessionConst.User_Login_Form, required = false)UserLoginForm userLoginForm){
+
+        User user = userService.findByName(encodedUsername);
+        Blog blog = postService.findBlogByUserLoginForm(userLoginForm);
+
+        List<Post> posts = blog.getPosts();
+
+        model.addAttribute("user", user);
+        model.addAttribute("posts", posts);
+        model.addAttribute("encodedUsername", encodedUsername);
+
+        return "post/showMyVelog";
     }
 }
