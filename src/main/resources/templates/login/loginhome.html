@@ -83,6 +83,68 @@
         .search-btn:hover {
             background-color: #333333;
         }
+
+        <!-- 추가한 CSS -->
+
+        .content {
+            padding: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .tabs .tab {
+            cursor: pointer;
+            padding: 10px;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tabs .tab.active {
+            border-bottom: 3px solid white;
+        }
+
+        <!-- grid 레이아웃 설정 추가 -->
+
+        #post-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .post {
+            border: 1px solid #333333;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #1e1e1e;
+        }
+
+        .post img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .post .post-title {
+            font-size: 1.5rem;
+            margin: 10px 0;
+        }
+
+        .post .post-subtitle {
+            font-size: 1rem;
+            color: #999999;
+        }
+
+        .post .post-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            color: #999999;
+        }
     </style>
 </head>
 <body>
@@ -109,5 +171,41 @@
     </div>
 </div>
 
+
+<!-- Content -->
+<div class="content">
+    <div class="tabs">
+        <div class="tab" id="trending-tab" onclick="switchTab('trending')">트렌딩</div>
+        <div class="tab" id="recent-tab" onclick="switchTab('recent')">최신</div>
+    </div>
+    <div id="post-container">
+        <div th:each="post : ${posts}" class="post">
+            <img th:src="${post.previewImage != null  ? '/images/' + post.previewImage.storeFileName : '/images/default-previewImage.png'}"
+                 alt="미리보기 이미지" />
+            <div class="post-title" th:text="${post.title}">Post Title</div>
+            <div class="post-subtitle" th:text="${post.subtitle}">Post Subtitle</div>
+            <div class="post-meta">
+                <div th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd')}">블로그 수정 시간</div>
+                <div th:text="${post.blog.user.username}">작성자</div>
+                <div th:text="'❤️ ' + ${post.likeCount}">❤️ 좋아요 개수</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(tab) {
+        document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+        document.getElementById(`${tab}-tab`).classList.add('active');
+
+        // 탭에 따라 다른 데이터를 불러오도록 Ajax 요청 등을 추가할 수 있음
+        // 현재는 단순히 스타일만 변경
+    }
+
+    // 초기 탭 설정
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('trending-tab').classList.add('active');
+    });
+</script>
 </body>
 </html>

@@ -130,6 +130,14 @@
                 </li>
             </ul>
         </div>
+
+        <!-- 태그 목록 22-->
+<!--        <div class="tags">-->
+<!--            <h3>태그 목록</h3>-->
+<!--            <ul class="tag-list" id="tag-list">-->
+<!--                &lt;!&ndash; JavaScript로 태그 목록 생성 &ndash;&gt;-->
+<!--            </ul>-->
+<!--        </div>-->
     </div>
 
     <!-- 메인 콘텐츠 -->
@@ -140,7 +148,6 @@
                 <a th:href="@{'/@' + ${encodedUsername} + '/' + ${post.title}}">
                     <h2 th:text="${post.title}">포스트 제목</h2>
                 </a>
-<!--                <h2 th:text="${post.title}">포스트 제목</h2>-->
                 <p th:text="${post.subtitle}">포스트 부제목</p>
                 <p th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd')}">포스트 수정시간</p>
                 <p>❤ <span th:text="${post.likeCount}"></span></p>
@@ -163,6 +170,12 @@
         document.getElementById('posts-tab').classList.toggle('active', section === 'posts');
         document.getElementById('series-tab').classList.toggle('active', section === 'series');
     }
+
+    // tag 태그명 중복제거를 위해.. -- 자바스크립트 인라인
+
+
+
+
 </script>
 </body>
 </html>

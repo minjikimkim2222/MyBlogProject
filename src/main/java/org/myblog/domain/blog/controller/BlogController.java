@@ -6,6 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.myblog.domain.blog.domain.Blog;
 import org.myblog.domain.blog.dto.BlogCreateForm;
 import org.myblog.domain.blog.service.BlogService;
+import org.myblog.domain.post.domain.Post;
+import org.myblog.domain.post.service.PostService;
+import org.myblog.domain.user.domain.User;
 import org.myblog.domain.user.dto.UserLoginForm;
 import org.myblog.domain.user.service.UserService;
 import org.myblog.web.login.SessionConst;
@@ -15,6 +18,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
 @Controller
 @RequestMapping("/myblog")
 @RequiredArgsConstructor
@@ -23,6 +30,8 @@ public class BlogController {
 
     private final UserService userService;
     private final BlogService blogService;
+    private final PostService postService;
+
     @GetMapping("/blogs")
     public String blogForm(Model model){
         model.addAttribute("blogCreateForm", new BlogCreateForm());
@@ -33,9 +42,6 @@ public class BlogController {
     public String createBlog(@Validated @ModelAttribute("blogCreateForm")BlogCreateForm form,
                              BindingResult bindingResult,
                              @SessionAttribute(name = SessionConst.User_Login_Form, required = false)UserLoginForm userLoginForm){ // 블로그 생성
-
-        log.info("Blog : {}", form); // -- 블로그 폼 잘 전달받았는지..
-        log.info("Session으로부터 받은 유저 로그인 정보 : {} ", userLoginForm);
 
         if (bindingResult.hasErrors()){
             return "redirect:/myblog/blogs"; // 타이틀 다시 입력하게끔
@@ -50,5 +56,21 @@ public class BlogController {
 
         // 블로그 생성 완료 (로그인 O, 블로그 생성 완 O)
         return "login/loginhome"; // 그제서야 기타 기능 사용 가능 !!
+    }
+
+    // 로그인된 블로그 메인화면
+    @GetMapping("/home")
+    public String showBlogHome(
+            Model model,
+           @SessionAttribute(name = SessionConst.User_Login_Form, required = false)UserLoginForm userLoginForm){
+
+        User foundUser = userService.findById(userLoginForm.getId());
+        List<Post> posts = postService.findAllPosts();
+
+        String encodedUsername = URLEncoder.encode(foundUser.getName(), StandardCharsets.UTF_8);
+        model.addAttribute("encodedUsername", encodedUsername);
+        model.addAttribute("posts", posts);
+
+        return "login/loginhome";
     }
 }

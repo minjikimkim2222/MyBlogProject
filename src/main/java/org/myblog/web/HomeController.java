@@ -44,11 +44,7 @@ public class HomeController {
             return "redirect:/myblog/blogs"; //  블로그 생성 페이지로 리다이렉션
         }
 
-        model.addAttribute("userid", foundUser.getId());
-
-        String encodedUsername = URLEncoder.encode(foundUser.getName(), StandardCharsets.UTF_8);
-        model.addAttribute("encodedUsername", encodedUsername);
-        return "login/loginhome"; // 로그인 O, 블로그 O -> loginhome 뷰
+        return "redirect:/myblog/home"; // 로그인 O, 블로그 O -> loginhome 뷰
     }
 
     @GetMapping("/test")
