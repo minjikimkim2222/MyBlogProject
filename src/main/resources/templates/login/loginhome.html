@@ -171,22 +171,15 @@
 <!-- Content -->
 <div class="content">
     <div class="tabs">
-        <div class="tab" id="trending-tab" onclick="switchTab('trending')">트렌딩</div>
-        <div class="tab" id="recent-tab" onclick="switchTab('recent')">최신</div>
+        <div class="tab" id="likes-tab" onclick="switchTab('likes')">좋아요순</div>
+        <div class="tab" id="recent-tab" onclick="switchTab('recent')">최신순</div>
     </div>
     <div id="post-container">
-        <div th:each="post : ${posts}" class="post">
-            <img th:src="${post.previewImage != null  ? '/images/' + post.previewImage.storeFileName : '/images/default-previewImage.png'}"
-                 alt="미리보기 이미지" />
-            <div class="post-title" th:text="${post.title}">Post Title</div>
-            <div class="post-subtitle" th:text="${post.subtitle}">Post Subtitle</div>
-            <div class="post-meta">
-                <div th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd')}">블로그 수정 시간</div>
-                <div th:text="${post.blog.user.username}">작성자</div>
-                <div th:text="'❤️ ' + ${post.likeCount}">❤️ 좋아요 개수</div>
-            </div>
-        </div>
+        <!-- 선택된 정렬기준 (좋아요순, 최신순)으로 페이징 처리된 Page<Post>들이
+             여기에 렌더링됩니다. -->
     </div>
+
+
 </div>
 
 <script>
@@ -194,13 +187,47 @@
         document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
         document.getElementById(`${tab}-tab`).classList.add('active');
 
-        // 탭에 따라 다른 데이터를 불러오도록 Ajax 요청 등을 추가할 수 있음
-        // 현재는 단순히 스타일만 변경
+        // 탭에 따라 최신순, 좋아요순 정렬 페이징 처리
+        const sort = tab === 'recent' ? 'recent' : 'likes';
+
+        fetch(`/posts?page=0&size=10&sort=${sort}`)
+            .then(response => response.json())
+            .then(data => {
+                const postContainer = document.getElementById('post-container');
+                postContainer.innerHTML = '';
+                data.content.forEach(post => {
+                    postContainer.innerHTML += `
+                        <div class="post">
+                            <img src="${post.previewImage != null ? '/images/' + post.previewImage.storeFileName : '/images/default-previewImage.png'}" alt="미리보기 이미지" />
+                            <a href="/@${post.username}/${post.title}/blog">
+                                <div class="post-title">${post.title}</div>
+                            </a>
+                            <div class="post-subtitle">${post.subtitle}</div>
+                            <div class="post-meta">
+                                <div>${new Date(post.updatedAt).toLocaleDateString()}</div>
+                                <div>${post.username}</div>
+                                <div>❤️ ${post.likeCount}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+
     }
 
     // 초기 탭 설정
     document.addEventListener('DOMContentLoaded', function () {
-        document.getElementById('trending-tab').classList.add('active');
+        switchTab('likes'); // 기본으로 좋아요순 정렬
+    });
+
+    // 트렌딩 클래스 누르면 -> likes 문자열 넘기도록 .. (좋아요순 페이징 처리)
+    document.getElementById('likes-tab').addEventListener('click', function () {
+        switchTab('likes');
+    });
+
+    // 최신순 페이징 처리
+    document.getElementById('recent-tab').addEventListener('click', function () {
+        switchTab('recent');
     });
 </script>
 </body>

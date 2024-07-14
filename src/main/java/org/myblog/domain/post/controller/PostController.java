@@ -4,11 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.myblog.domain.blog.domain.Blog;
 import org.myblog.domain.post.domain.Post;
-import org.myblog.domain.post.dto.PostCreatedDto;
-import org.myblog.domain.post.dto.PostCreatedDto2;
-import org.myblog.domain.post.dto.PostUpdatedDto;
-import org.myblog.domain.post.dto.PostUpdatedDto2;
-import org.myblog.domain.post.repository.PostRepository;
+import org.myblog.domain.post.dto.*;
 import org.myblog.domain.post.service.PostService;
 import org.myblog.domain.series.domain.Series;
 import org.myblog.domain.series.service.SeriesService;
@@ -20,6 +16,10 @@ import org.myblog.domain.user.dto.UserLoginForm;
 import org.myblog.domain.user.service.UserService;
 import org.myblog.web.file.FileStore;
 import org.myblog.web.login.SessionConst;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -31,9 +31,7 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -136,7 +134,7 @@ public class PostController {
 
     // 만들어진 Post 엔디티 보여주는 화면
     @GetMapping("/@{encodedUsername}/{encodedPostTitle}")
-    public String showPost(@PathVariable String encodedUsername, @PathVariable String encodedPostTitle, Model model,
+    public String showMyPost(@PathVariable String encodedUsername, @PathVariable String encodedPostTitle, Model model,
                            @SessionAttribute(name = SessionConst.User_Login_Form, required = false)UserLoginForm userLoginForm){
         String decodedUsername = URLDecoder.decode(encodedUsername, StandardCharsets.UTF_8);
         String decodedPostTitle = URLDecoder.decode(encodedPostTitle, StandardCharsets.UTF_8);
@@ -297,5 +295,19 @@ public class PostController {
         model.addAttribute("encodedUsername", encodedUsername);
 
         return "post/showMyVelog";
+    }
+
+    // 페이징 처리 -- 최신순, 좋아요 정렬
+    //fetch(`/posts?page=0&size=10&sort=${sort}`)
+    @GetMapping("/posts")
+    @ResponseBody
+    public Page<PostPagingResponseDTO> getPostsBypaging(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "likes") String sort // 디폴트는 좋아요순
+    ){
+        Pageable pageable = PageRequest.of(page, size); // pageable 인터페이스의 구현체, pageRequest
+
+        return postService.getPostsByPaging(pageable, sort);
     }
 }

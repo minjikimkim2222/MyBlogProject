@@ -3,6 +3,7 @@ package org.myblog.domain.post.service;
 import lombok.RequiredArgsConstructor;
 import org.myblog.domain.blog.domain.Blog;
 import org.myblog.domain.post.domain.Post;
+import org.myblog.domain.post.dto.PostPagingResponseDTO;
 import org.myblog.domain.post.exception.PostNotFoundException;
 import org.myblog.domain.post.repository.PostRepository;
 import org.myblog.domain.tag.repository.TagRepository;
@@ -10,6 +11,9 @@ import org.myblog.domain.user.domain.User;
 import org.myblog.domain.user.dto.UserLoginForm;
 import org.myblog.domain.user.exception.UserNotFoundException;
 import org.myblog.domain.user.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -62,6 +66,19 @@ public class PostService {
 
     public List<Post> findAllPosts(){
         return postRepository.findAll();
+    }
+
+    // 페이징 처리를 위한 서비스 코드
+    public Page<PostPagingResponseDTO> getPostsByPaging(Pageable pageable, String sort){
+        Page<Post> posts;
+
+        if ("recent".equals(sort)){ // 최신순
+            posts = postRepository.findAllByOrderByUpdatedAtDesc(pageable);
+        } else { // 좋아요순 (디폴트값)
+            posts = postRepository.findAllByOrderByLikeCountDesc(pageable);
+        }
+
+        return posts.map(PostPagingResponseDTO::new);
     }
 
 }
