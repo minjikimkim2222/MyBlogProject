@@ -423,37 +423,82 @@
 
 
     // 팔로우 버튼 이벤트 핸들러
-    document.getElementById('follow-button').addEventListener('click', function() {
-        const followButton = document.getElementById('follow-button');
-        const followedUserId = document.getElementById('userBlog-id').value; // 팔로우 대상
+    // document.getElementById('follow-button').addEventListener('click', function() {
+    //     const followedUserId = document.getElementById('userBlog-id').value; // 팔로우 대상
+    //     const userId = document.getElementById('userSession-id').value; // 현재 로그인한 사용자
+    //     const followButton = document.getElementById('follow-button');
+    //
+    //     const payload = {
+    //         userId: userId,
+    //         followedUserId: followedUserId
+    //     };
+    //
+    //     fetch('/follow', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify(payload)
+    //     })
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             if (data.followResult) { // 팔로우 -> 팔로잉 으로 바뀜 [팔로우]
+    //                 followButton.innerText = '팔로잉';
+    //                 followButton.classList.add('following');
+    //             } else { // 팔로잉 -> 팔로우 로 바뀜 [언팔로우]
+    //                 followButton.innerText = '팔로우';
+    //                 followButton.classList.remove('following');
+    //             }
+    //         })
+    //         .catch(error => console.error('Fetch error:', error));
+    // });
+
+    document.addEventListener('DOMContentLoaded', function() {
         const userId = document.getElementById('userSession-id').value; // 현재 로그인한 사용자
+        const followedUserId = document.getElementById('userBlog-id').value; // 팔로우 대상
+        const followButton = document.getElementById('follow-button');
 
-        const payload = {
-            userId: userId,
-            followedUserId: followedUserId
-        };
-
-        fetch('/follow', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        })
+        // 현재 로그인한 사용자가 특정 사용자를 팔로우하고 있는지 확인
+        fetch(`/follow/status?userId=${userId}&followedUserId=${followedUserId}`)
             .then(response => response.json())
             .then(data => {
-                if (data.followResult) { // 팔로우 -> 팔로잉 으로 바뀜 [팔로우]
+                if (data.followResult) { // 이미 팔로우한 상태라면, '팔로잉' 버튼을..
                     followButton.innerText = '팔로잉';
                     followButton.classList.add('following');
-                } else { // 팔로잉 -> 팔로우 로 바뀜 [언팔로우]
+                } else { // 아직 팔로우 안한 상태라면, '팔로우' 버튼을..
                     followButton.innerText = '팔로우';
                     followButton.classList.remove('following');
                 }
             })
             .catch(error => console.error('Fetch error:', error));
+
+        // 팔로우 버튼 이벤트 핸들러
+        followButton.addEventListener('click', function() {
+            const payload = {
+                userId: userId,
+                followedUserId: followedUserId
+            };
+
+            fetch('/follow', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.followResult) {
+                        followButton.innerText = '팔로잉';
+                        followButton.classList.add('following');
+                    } else {
+                        followButton.innerText = '팔로우';
+                        followButton.classList.remove('following');
+                    }
+                })
+                .catch(error => console.error('Fetch error:', error));
+        });
     });
-
-
 
 </script>
 </body>

@@ -292,6 +292,13 @@ public class PostController {
         model.addAttribute("user", user);
         model.addAttribute("posts", posts);
         model.addAttribute("encodedUsername", encodedUsername);
+        model.addAttribute("followerCount", user.getFollowers().size());
+        model.addAttribute("followingCount", user.getFollowings().size());
+
+        log.info("user.followers :: {}", user.getFollowers().size());
+        log.info("user.followings :: {}", user.getFollowings().size());
+
+
 
         return "post/showMyVelog";
     }

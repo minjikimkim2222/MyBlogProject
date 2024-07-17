@@ -51,10 +51,10 @@ public class User {
     private List<Like> likes;
 
     @OneToMany(mappedBy = "followedUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Follow> followers;
+    private List<Follow> followers; // 나를 팔로잉하는 사람들
 
     @OneToMany(mappedBy = "followingUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Follow> followings;
+    private List<Follow> followings; // 내가 팔로우하는 사람들
 
     // 테스트용
 
@@ -66,4 +66,6 @@ public class User {
         this.username = username;
         this.email = email;
     }
+
+
 }

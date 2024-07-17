@@ -23,20 +23,23 @@ public class Follow {
     @JoinColumn(name = "following_user_id")
     private User followingUser; // 팔로잉하는 사람 -- 현재 로그인한 나
 
-    private void setFollowingUser(User followingUser){
+    // 원래 연관관계 메서드
+    public void setFollowingUser(User followingUser){
         this.followingUser = followingUser;
+        followingUser.getFollowings().add(this);
     }
 
-    private void setFollowedUser(User followedUser){
+    public void setFollowedUser(User followedUser){
         this.followedUser = followedUser;
+        followedUser.getFollowers().add(this);
     }
 
     // 생성메서드
-    public static Follow createFollow(User followingUser, User followedUser){
+    public static Follow createFollow(User followingUser, User followedUser){ // id1, id2
         Follow follow = new Follow();
 
-        follow.setFollowingUser(followingUser);
-        follow.setFollowedUser(followedUser);
+        follow.setFollowingUser(followingUser); // id1 -- followingUser(id2)
+        follow.setFollowedUser(followedUser); // id2 -- followedUser(id1)
 
         return follow;
     }

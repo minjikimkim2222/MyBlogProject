@@ -39,4 +39,10 @@ public class FollowService {
         }
 
     }
+
+    @Transactional(readOnly = true)
+    public boolean isFollowing(Long userId, Long followedUserId){
+        return followRepository.existsByFollowingUserIdAndFollowedUserId(userId, followedUserId);
+    }
+
 }

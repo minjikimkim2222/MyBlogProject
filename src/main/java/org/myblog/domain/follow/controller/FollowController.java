@@ -7,14 +7,25 @@ import org.myblog.domain.follow.service.FollowService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
 public class FollowController {
     private final FollowService followService;
+
+    // /follow/status?userId=${userId}&followedUserId=${followedUserId}
+    // 현재 로그인한 사용자가 특정 사용자를 팔로우하고 있는지 확인하는 메서드
+    @GetMapping("/follow/status")
+    @ResponseBody
+    public ResponseEntity<?> checkFollowStatus(@RequestParam Long userId, @RequestParam Long followedUserId){
+        boolean followResult = followService.isFollowing(userId, followedUserId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new FollowResponse(followResult)); // 이미 팔로잉했는지 여부 -- T : 팔로우했음, F : 팔로우안했음
+    }
+
 
     @PostMapping(value = "/follow")
     @ResponseBody
@@ -23,7 +34,7 @@ public class FollowController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new FollowResponse(followResult));
+                .body(new FollowResponse(followResult)); // 팔로잉여부 (T - 팔로우, F - 언팔로우)
     }
 
     @Data
@@ -35,7 +46,7 @@ public class FollowController {
     @Data
     @AllArgsConstructor
     static class FollowResponse {
-        private boolean followResult; // 팔로잉여부 (T - 팔로우, F - 언팔로우)
+        private boolean followResult;
     }
 
 }
