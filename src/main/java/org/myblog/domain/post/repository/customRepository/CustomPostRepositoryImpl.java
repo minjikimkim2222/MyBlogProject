@@ -16,6 +16,13 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+    1. 제목과 부제목 모두 빈칸 -> 모든 포스트 반환
+    2. 제목만 검색, 부제목은 빈칸 -> 제목으로 검색
+    3. 제목은 빈칸이고, 부제목만 값이 있는 경우 -> 부제목으로 검색
+    4. 제목, 부제목 모두 값이 있는 경우 -> 제목과 부제목으로 검색
+ */
+
 @Repository
 @RequiredArgsConstructor
 @Slf4j
@@ -25,36 +32,30 @@ public class CustomPostRepositoryImpl implements CustomPostRepository{
     @Override
     public List<Post> findAllByCriteria(OrderSearch orderSearch) {
 
-        // 1. SELECT * FROM posts p 쿼리 생성
+        // select * from post p 쿼리 생성
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Post> cq = cb.createQuery(Post.class); // Post 엔디티를 대상으로 하는 쿼리 생성
-        Root<Post> post = cq.from(Post.class); // 쿼리에서 사용할 루트 엔디티
+        CriteriaQuery<Post> cq = cb.createQuery(Post.class);
+        Root<Post> post = cq.from(Post.class);
 
-        List<Predicate> criteria = new ArrayList<>(); // 검색 조건을 담을, 리스트 생성
+        List<Predicate> criteria = new ArrayList<>();
 
-        // 2-1. 제목 검색 -- WHERE p.title LIKE '%{orderSearch.getTitle()}%'
-        if (orderSearch.getTitle() != null){
+        // 제목 검색
+        if (StringUtils.hasText(orderSearch.getTitle())) {
             Predicate titlePredicate = cb.like(post.get("title"), "%" + orderSearch.getTitle() + "%");
             criteria.add(titlePredicate);
         }
 
-        // 2-2. 내용 검색 -- WHERE p.subtitle LIKE '%{orderSearch.getSubtitle()}%'
+        // 부제목 검색
         if (StringUtils.hasText(orderSearch.getSubtitle())) {
-            Predicate subtitlePredicate = cb.like(post.get("content"), "%" + orderSearch.getSubtitle() + "%");
+            Predicate subtitlePredicate = cb.like(post.get("subtitle"), "%" + orderSearch.getSubtitle() + "%");
             criteria.add(subtitlePredicate);
         }
 
-        // 3. 조건들을 OR로 연결해서 WHERE 절에 추가
-        // -- WHERE (p.title LIKE '%{orderSearch.getTitle()}%' OR p.subtitle LIKE '%{orderSearch.getSubtitle()}%')
-        if (!criteria.isEmpty()){
-            cq.where(cb.or(criteria.toArray(new Predicate[0]))); // where 조건절 추가
+        if (!criteria.isEmpty()) {
+            cq.where(cb.and(criteria.toArray(new Predicate[0]))); // where 조건절 추가
         }
 
-        // 4. 최종 쿼리
-        // -- SELECT * FROM posts p
-        //    WHERE (p.title LIKE '%{orderSearch.getTitle()}%' OR p.subtitle LIKE '%{orderSearch.getSubtitle()}%')
-        //    LIMIT 1000
-        TypedQuery<Post> query = em.createQuery(cq).setMaxResults(1000);// 최대 1000건
+        TypedQuery<Post> query = em.createQuery(cq).setMaxResults(1000); // 최대 1000건
 
         return query.getResultList();
     }
