@@ -321,6 +321,7 @@ public class PostController {
                 .collect(Collectors.toList());
 
         model.addAttribute("posts", posts);
+        model.addAttribute("postCount", posts.size());
 
         return "post/search";
     }

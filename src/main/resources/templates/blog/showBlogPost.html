@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <title>Post View</title>
+    <style>
+        body {
+            background-color: #222;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+        }
+
+        .like-container {
+            position: fixed;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .like-button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            color: #fff;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .like-count {
+            color: #fff;
+            font-size: 18px;
+        }
+
+        .post-container {
+            width: 60%;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .post-header {
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+
+        .post-title {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .post-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .post-author, .post-time {
+            font-size: 0.9em;
+            color: #bbb;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .post-action {
+            cursor: pointer;
+            color: #888;
+        }
+
+        .post-content {
+            padding: 20px 0;
+            border-bottom: 1px solid #444;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .author-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .author-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .author-name {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .comments-section {
+            padding: 20px 0;
+        }
+
+        .comments-section h2 {
+            margin-bottom: 10px;
+        }
+
+        .comment-input {
+            width: 100%;
+            height: 100px;
+            background-color: #333;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .comment-submit {
+            padding: 10px 20px;
+            background-color: #1e90ff;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .comment {
+            margin-bottom: 10px;
+        }
+
+        .comment-author {
+            font-weight: bold;
+        }
+
+        .comment-content {
+            margin: 5px 0;
+        }
+
+        .comment-actions {
+            font-size: 0.9em;
+            color: #bbb;
+            cursor: pointer;
+        }
+
+        body div {
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+
+        img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid white;
+            margin-right: 20px;
+        }
+
+        <!-- 팔로우 스타일 추가 -->
+
+        .follow-button {
+            background-color: #1e90ff;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .follow-button.following {
+            background-color: #555;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- 좋아요 버튼 -->
+
+<div class="like-container">
+    <button class="like-button" data-liked="false" id="like-button">❤</button>
+    <div class="like-count" id="like-count" th:text="${post.likeCount}">0</div>
+</div>
+
+<div class="post-container">
+    <div class="post-header">
+        <h1 class="post-title" th:text="${post.title}">현재 post 제목</h1>
+        <div class="post-meta">
+            <span class="post-author" th:text="${userBlog.name}">Blog에 매핑된 유저정보 -- name</span>
+            <span class="post-time"
+                  th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm')}">가장 최근 포스트 수정시간</span>
+            <button class="follow-button" id="follow-button">팔로우</button>
+        </div>
+    </div>
+
+    <div>
+        <div class="post-content" th:text="${post.content}"></div>
+    </div>
+
+    <div class="post-content">
+        <div class="author-info">
+            <img th:src="${userBlog.profileFile != null  ? '/images/' + userBlog.profileFile.storeFileName : '/images/default-profile.png'}"
+                 alt="Profile Image" />
+            <div class="author-details">
+                <span class="author-name" th:text="${userBlog.username}">유저Blog 닉네임</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="comments-section">
+        <h3 class="comments-count" th:text="${post.comments.size()} + '개의 댓글'">0개의 댓글</h3>
+        <textarea class="comment-input" placeholder="댓글을 작성하세요"></textarea>
+        <button class="comment-submit">댓글 작성</button>
+
+        <!-- 제일 처음에, 이미 있는 댓글 로딩 .. -->
+        <div class="comments-list">
+            <div th:each="comment : ${post.comments}">
+                <!-- 댓글 요소에 data-comment-id 속성을 추가해, 댓글을 식별할 수 있게 한다.
+                    여기서도 값을 타임리프로 바인딩해주는 이유는, 기존댓글 id 값 설정 -->
+                <div class="comment" th:attr="data-comment-id=${comment.id}">
+                    <!-- -->
+                    <span class="comment-author" th:text="${comment.authorName}">작성자</span> <!-- comment에 저장된 작성자 이름을 가져와야 함 !!-->
+                    <p class="comment-content" th:text="${comment.content}">댓글 내용</p>
+                    <div class="comment-actions">
+                        <span th:text="${#temporals.format(comment.updatedAt, 'yyyy-MM-dd HH:mm')}">작성 시간</span>
+                        <span class="comment-edit">수정</span>
+                        <span class="comment-delete">삭제</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- comments 엔디티로 postId를 보내기 위해, input hidden 필드 추가-->
+    <input type="hidden" id="post-id" th:value="${post.id}">
+    <input type="hidden" id="userSession-id" th:value="${userSession.id}">
+    <input type="hidden" id="userBlog-id" th:value="${userBlog.id}">
+</div>
+
+<script>
+    // '댓글 작성' 버튼 누르면, 댓글 '생성' 추가
+    document.querySelector('.comment-submit').addEventListener('click', function() {
+        const content = document.querySelector('.comment-input').value;
+        const postId = document.getElementById('post-id').value;
+        const userId = document.getElementById('userSession-id').value;
+
+        const payload = {
+            content: content,
+            postId: postId,
+            userId : userId // 댓글 작성할 때, 로그인한 유저정보(세션정보)를 알기 위해 !!
+        };
+
+        // POST /comments - 댓글 추가 api request 보내기
+        fetch('/comments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        }) // 디버깅을 위한 코드 추가 -- 실은 .then(response => response.json()) 하고 난뒤 .then (data => {}) 해도 됨
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.text();  // 응답을 텍스트로 먼저 받음
+            })
+            .then(text => {
+                console.log('Response text:', text);
+                return JSON.parse(text);  // 그런 다음 텍스트를 JSON으로 파싱
+            })
+            .then(data => {
+                console.log('Parsed data:', data);
+
+                if (data.success) {
+
+                    //alert('현재 로그인한 유저 닉네임 ' + data.authorName);
+
+                    //alert('전달받은 commentId : ' + data.commentId);
+
+                    // 새로운 댓글을 추가
+                    const commentList = document.querySelector('.comments-list');
+                    const newComment = document.createElement('div');
+                    newComment.classList.add('comment'); // <div class="comment"></div>
+
+                    // 추가한, data-comment-id 값 설정 추가
+                    newComment.setAttribute('data-comment-id', data.commentId);
+
+                    newComment.innerHTML = `
+                    <span class="comment-author">${data.authorName}</span>
+                    <p class="comment-content">${data.content}</p>
+                    <div class="comment-actions">
+                        <span>${new Date(data.updatedAt).toLocaleString()}</span>
+                        <span class="comment-edit">수정</span>
+                        <span class="comment-delete">삭제</span>
+                    </div>
+                `;
+                    commentList.appendChild(newComment);
+
+                    // 댓글 추가 후, 댓글 개수를 업데이트
+                    const commentsCount = document.querySelector('.comments-count');
+                    const currentCount = parseInt(commentsCount.innerText.split(' ')[0]);
+                    commentsCount.innerText = `${currentCount + 1}개의 댓글`;
+
+                    document.querySelector('.comment-input').value = ''; // 입력 필드 초기화
+                } else {
+                    console.error('Comment creation failed:', data);
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+            }); // fetch -- POST /comments
+    }); // document.querySelector
+
+    // 댓글 수정 및 삭제 기능
+    document.querySelector('.comments-list').addEventListener('click', function(event) {
+
+        // 댓글 수정 버튼을 클릭하면.. 해당 댓글 내용이 입력 폼으로 변환되게끔..
+        if (event.target.classList.contains('comment-edit')) {
+            const commentElement = event.target.closest('.comment');
+            const contentElement = commentElement.querySelector('.comment-content');
+            const originalContent = contentElement.innerText;
+            contentElement.innerHTML = `<textarea class="edit-comment-input">${originalContent}</textarea>
+                                        <button class="edit-comment-submit">댓글 수정</button>`;
+
+        } else if (event.target.classList.contains('edit-comment-submit')) {// '댓글 수정' 버튼을 클릭하면..
+            // 서버에 PATCH 요청을 보내서, 댓글 내용을 업데이트한다 !!
+
+            const commentElement = event.target.closest('.comment');
+            const commentId = commentElement.getAttribute('data-comment-id');
+            const newContent = commentElement.querySelector('.edit-comment-input').value;
+
+            const payload = {
+                content: newContent
+            };
+
+            fetch(`/comments/${commentId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data) {
+                        const contentElement = commentElement.querySelector('.comment-content');
+                        contentElement.innerText = newContent;
+                    } else {
+                        console.error('Comment update failed:', data);
+                    }
+                })
+                .catch(error => console.error('Fetch error:', error));
+
+        } else if (event.target.classList.contains('comment-delete')) { // -- 삭제버튼 클릭하면..
+            // 서버에 DELETE 요청을 보내서, 댓글을 삭제한다
+            const commentElement = event.target.closest('.comment');
+            const commentId = commentElement.getAttribute('data-comment-id');
+
+            fetch(`/comments/${commentId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data) {
+                        location.reload(true);
+                    } else {
+                        console.error('Comment deletion failed:', data);
+                    }
+                })
+                .catch(error => console.error('Fetch error:', error));
+        }
+
+    }); // 댓글 수정 및 삭제
+
+
+    // 좋아요 기능
+    // -- 좋아요 버튼 눌렀을 때 서버에 요청을 보내고, 응답에 따라 좋아요수 업데이트
+    document.getElementById('like-button').addEventListener('click', function() {
+        const postId = document.getElementById('post-id').value;
+        const likeButton = document.getElementById('like-button');
+        const likeCount = document.getElementById('like-count');
+
+        const payload = {
+            postId: postId
+        };
+
+        fetch('/likes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(response => response.json())
+            .then(data => {
+
+                //alert('여기는 오는거임??');
+                //alert('likeCount : ' + data.likeCount);
+                //alert('liked : '+ data.liked);
+
+                likeButton.setAttribute('data-liked', data.liked); // 좋아요 토글 업데이트
+                likeCount.innerText = data.likeCount; // 좋아요 개수
+
+                if (data.liked) { // 좋아요 상태 !!
+                    likeButton.innerText = '❤';
+                } else { // 좋아요 취소 상태 !!
+                    likeButton.innerText = '💔';
+                }
+            })
+            .catch(error => console.error('Fetch error:', error));
+    });
+
+
+    // 팔로우 버튼 이벤트 핸들러
+    document.getElementById('follow-button').addEventListener('click', function() {
+        const followButton = document.getElementById('follow-button');
+        const followedUserId = document.getElementById('userBlog-id').value; // 팔로우 대상
+        const userId = document.getElementById('userSession-id').value; // 현재 로그인한 사용자
+
+        const payload = {
+            userId: userId,
+            followedUserId: followedUserId
+        };
+
+        fetch('/follow', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.followResult) { // 팔로우 -> 팔로잉 으로 바뀜 [팔로우]
+                    followButton.innerText = '팔로잉';
+                    followButton.classList.add('following');
+                } else { // 팔로잉 -> 팔로우 로 바뀜 [언팔로우]
+                    followButton.innerText = '팔로우';
+                    followButton.classList.remove('following');
+                }
+            })
+            .catch(error => console.error('Fetch error:', error));
+    });
+
+
+
+</script>
+</body>
+</html>

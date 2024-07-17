@@ -79,13 +79,12 @@ public class BlogController {
     // 블로그메인화면에서, 타이틀 클릭하면 이동할 화면
     @GetMapping("/@{blogUsername}/{postTitle}/blog")
     public String showBlogPost(@PathVariable String blogUsername, @PathVariable String postTitle,
-                               @SessionAttribute(name = SessionConst.User_Login_Form, required = false)UserLoginForm userLoginForm
+                               @SessionAttribute(name = SessionConst.User_Login_Form, required = false)UserLoginForm userLoginForm,
+                               Model model
                                ){
-        //log.info("blogUsername ::: {}",blogUsername);
-        //log.info("postTitle ::: {}",  postTitle);
+
         User foundUser = userService.findById(userLoginForm.getId());
         Post foundPost = postService.findByTitle(postTitle);
-        //log.info("로그인 유저 이름 ::: {}", foundUser.getUsername());
 
         if (blogUsername.equals(foundUser.getUsername())){
             // 해당 post에 매핑된 Username이 현재 로그인된 userName이 같음..> 내 글화면으로 이동
@@ -95,9 +94,15 @@ public class BlogController {
             return "redirect:/@" + encodedUsername + "/" + encodedPostTitle;
 
         } else {
-            // 현재 post에 매핑된 username이 내가 아님 -> 다른 사람의 글
-            log.info("blogUsername과 로그인된 userName이 다릅니다.");
-            return "test";
+            // 현재 로그인한 유저(userSession)과 현재포스트작성자(userBlog)가 서로 다름 -> 다른 사람의 글
+
+            User blogUser = userService.findByUsername(blogUsername);
+
+            model.addAttribute("userBlog", blogUser);
+            model.addAttribute("userSession", foundUser);
+            model.addAttribute("post", foundPost);
+
+            return "blog/showBlogPost";
         }
     }
 }

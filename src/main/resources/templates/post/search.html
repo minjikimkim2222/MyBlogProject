@@ -76,15 +76,22 @@
         </form>
     </div>
 
+    <div>
+        <p th:text="'총 ' + ${postCount} + '개의 포스트를 찾았습니다.'"></p>
+    </div>
+
     <div id="post-container">
         <div th:each="post,stat : ${posts}" class="post">
-            <p>제목 : <span th:text="${post.title}"></span></p>
-            <p>username : <span th:text="${post.username}"></span></p>
-            <p>내용 : <span th:text="${post.content}"></span></p>
-            <p>subtitle : <span th:text="${post.subtitle}"></span></p>
-            <p>좋아요 개수 : <span th:text="${post.likeCount}"></span></p>
-            <p>검색게시글 개수 : <span th:text="${stat.count}"></span></p>
-            <br><br>
+            <img th:src="${post.previewImage != null ? '/images/' + post.previewImage.storeFileName : '/images/default-previewImage.png'}" alt="미리보기 이미지" />
+            <a th:href="@{'/@' + ${post.username} + '/' + ${post.title} + '/blog'}">
+                <p th:text="${post.title}" class="post-title"></p>
+            </a>
+            <p th:text="${post.subtitle}" class="post-subtitle">부제목</p>
+            <div class="post-meta">
+                <p th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd')}"></p>
+                <p th:text="${post.username}"></p>
+                <p th:text="${post.likeCount}"></p>
+            </div>
         </div>
     </div>
 </div> <!-- content -->
