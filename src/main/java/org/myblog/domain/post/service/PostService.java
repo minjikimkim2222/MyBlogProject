@@ -1,7 +1,9 @@
 package org.myblog.domain.post.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.myblog.domain.blog.domain.Blog;
+import org.myblog.domain.post.controller.OrderSearch;
 import org.myblog.domain.post.domain.Post;
 import org.myblog.domain.post.dto.PostPagingResponseDTO;
 import org.myblog.domain.post.exception.PostNotFoundException;
@@ -15,12 +17,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
@@ -81,4 +86,8 @@ public class PostService {
         return posts.map(PostPagingResponseDTO::new);
     }
 
+    @Transactional(readOnly = true)
+    public List<Post> searchPosts(OrderSearch orderSearch){
+        return postRepository.findAllByCriteria(orderSearch);
+    }
 }

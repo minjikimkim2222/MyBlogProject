@@ -19,7 +19,6 @@ import org.myblog.web.login.SessionConst;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -309,5 +308,20 @@ public class PostController {
         Pageable pageable = PageRequest.of(page, size); // pageable 인터페이스의 구현체, pageRequest
 
         return postService.getPostsByPaging(pageable, sort);
+    }
+
+    // 검색 기능
+    @GetMapping("/search")
+    public String postListBySearch(@ModelAttribute("orderSearch") OrderSearch orderSearch, Model model){
+
+        List<Post> postList = postService.searchPosts(orderSearch);
+
+        List<PostSearchDto> posts = postList.stream()
+                .map(post -> new PostSearchDto(post))
+                .collect(Collectors.toList());
+
+        model.addAttribute("posts", posts);
+
+        return "post/search";
     }
 }

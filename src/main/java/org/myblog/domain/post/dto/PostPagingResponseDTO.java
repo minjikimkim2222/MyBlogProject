@@ -25,7 +25,9 @@ public class PostPagingResponseDTO {
         this.title = post.getTitle();
         this.subtitle = post.getSubtitle();
 
-        this.username = post.getBlog().getUser().getUsername(); // post - Blog - User 엔디티의 username
+        if (post.getBlog()!= null) {
+            this.username = post.getBlog().getUser().getUsername(); // post - Blog - User 엔디티의 username
+        }
         this.updatedAt = post.getUpdatedAt();
         this.likeCount = post.getLikeCount();
 

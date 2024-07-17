@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>search 화면</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin-bottom: 10px;
+        }
+
+
+        .content {
+            padding: 20px;
+        }
+
+        #post-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .post {
+            border: 1px solid #333333;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #1e1e1e;
+        }
+
+        .post img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .post .post-title {
+            font-size: 1.5rem;
+            margin: 10px 0;
+        }
+
+        .post .post-subtitle {
+            font-size: 1rem;
+            color: #999999;
+        }
+
+        .post .post-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            color: #999999;
+        }
+    </style>
+</head>
+<body>
+
+<div class="content">
+    <div>
+        <form th:object="${orderSearch}" class="form-inline">
+            <div class="form-group mb-2">
+                <input type="text" th:field="*{title}" class="form-control" placeholder="제목을 입력해주세요"/>
+            </div>
+            <div class="form-group mb-2">
+                <input type="text" th:field="*{subtitle}" class="form-control" placeholder="부제목을 입력해주세요"/>
+            </div>
+            <button type="submit" class="btn btn-primary mb-2">검색</button>
+        </form>
+    </div>
+
+    <div id="post-container">
+        <div th:each="post,stat : ${posts}" class="post">
+            <p>제목 : <span th:text="${post.title}"></span></p>
+            <p>username : <span th:text="${post.username}"></span></p>
+            <p>내용 : <span th:text="${post.content}"></span></p>
+            <p>subtitle : <span th:text="${post.subtitle}"></span></p>
+            <p>좋아요 개수 : <span th:text="${post.likeCount}"></span></p>
+            <p>검색게시글 개수 : <span th:text="${stat.count}"></span></p>
+            <br><br>
+        </div>
+    </div>
+</div> <!-- content -->
+
+</body>
+</html>

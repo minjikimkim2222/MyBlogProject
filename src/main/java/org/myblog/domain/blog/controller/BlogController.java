@@ -68,8 +68,10 @@ public class BlogController {
         List<Post> posts = postService.findAllPosts();
 
         String encodedUsername = URLEncoder.encode(foundUser.getName(), StandardCharsets.UTF_8);
+
         model.addAttribute("encodedUsername", encodedUsername);
         model.addAttribute("posts", posts);
+        model.addAttribute("username", foundUser.getUsername());
 
         return "login/loginhome";
     }
