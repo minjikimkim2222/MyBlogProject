@@ -423,36 +423,6 @@
 
 
     // 팔로우 버튼 이벤트 핸들러
-    // document.getElementById('follow-button').addEventListener('click', function() {
-    //     const followedUserId = document.getElementById('userBlog-id').value; // 팔로우 대상
-    //     const userId = document.getElementById('userSession-id').value; // 현재 로그인한 사용자
-    //     const followButton = document.getElementById('follow-button');
-    //
-    //     const payload = {
-    //         userId: userId,
-    //         followedUserId: followedUserId
-    //     };
-    //
-    //     fetch('/follow', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify(payload)
-    //     })
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             if (data.followResult) { // 팔로우 -> 팔로잉 으로 바뀜 [팔로우]
-    //                 followButton.innerText = '팔로잉';
-    //                 followButton.classList.add('following');
-    //             } else { // 팔로잉 -> 팔로우 로 바뀜 [언팔로우]
-    //                 followButton.innerText = '팔로우';
-    //                 followButton.classList.remove('following');
-    //             }
-    //         })
-    //         .catch(error => console.error('Fetch error:', error));
-    // });
-
     document.addEventListener('DOMContentLoaded', function() {
         const userId = document.getElementById('userSession-id').value; // 현재 로그인한 사용자
         const followedUserId = document.getElementById('userBlog-id').value; // 팔로우 대상

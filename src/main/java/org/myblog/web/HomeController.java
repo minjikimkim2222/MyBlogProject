@@ -2,6 +2,9 @@ package org.myblog.web;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.myblog.domain.post.domain.Post;
+import org.myblog.domain.post.service.PostService;
 import org.myblog.domain.user.domain.User;
 import org.myblog.domain.user.dto.UserLoginForm;
 import org.myblog.domain.user.service.UserService;
@@ -13,12 +16,15 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class HomeController {
 
     private final UserService userService;
+    private final PostService postService;
 
     @GetMapping("/")
     public String root(){
@@ -31,6 +37,12 @@ public class HomeController {
             Model model){
         // 세션에 데이터가 없으면 home 뷰로 -- 로그인 안된 상태
         if (userLoginForm == null){
+            // 로그인 안된 상태더라도, 다른 사람들의 post 화면 확인가능
+            List<Post> posts = postService.findAllPosts();
+
+            model.addAttribute("posts", posts);
+            log.info("post 개수 :: {}", posts.size());
+
             return "home"; // 로그인 전 페이지
         }
 

@@ -83,6 +83,25 @@
             border-radius: 10px;
         }
 
+        .post .post-title {
+            font-size: 1.5rem;
+            margin: 10px 0;
+            color: white;
+        }
+
+        .post .post-subtitle {
+            font-size: 1rem;
+            color: #999999;
+        }
+
+        .post .post-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            color: #999999;
+        }
+
         body div {
             margin-bottom: 10px;
         }
@@ -120,24 +139,16 @@
         <div class="tags">
             <h3>태그 목록</h3>
             <ul class="tag-list">
-                <li th:each="post : ${posts}">
-                    <ul th:each="tag : ${post.tags}">
-                        <li>
-                            <a th:href="@{/tags/{tag} (tag=${tag.tagName})}"><span th:text="${tag.tagName}">Tag Name
-                                <!--(<span th:text="${tag.count}">0</span>)--></span></a>
-                        </li>
-                    </ul>
+                <li th:each="tagEntry : ${tagCountMap}">
+                    <a th:href="@{/tags/{tag} (tag=${tagEntry.key})}">
+                        <span th:text="${tagEntry.key}">Tag Name</span>
+                        (<span th:text="${tagEntry.value}">0</span>)
+                    </a>
                 </li>
             </ul>
         </div>
 
-        <!-- 태그 목록 22-->
-<!--        <div class="tags">-->
-<!--            <h3>태그 목록</h3>-->
-<!--            <ul class="tag-list" id="tag-list">-->
-<!--                &lt;!&ndash; JavaScript로 태그 목록 생성 &ndash;&gt;-->
-<!--            </ul>-->
-<!--        </div>-->
+
     </div>
 
     <!-- 메인 콘텐츠 -->
@@ -146,11 +157,13 @@
         <div class="posts" id="posts-section">
             <div class="post" th:each="post : ${posts}">
                 <a th:href="@{'/@' + ${encodedUsername} + '/' + ${post.title}}">
-                    <h2 th:text="${post.title}">포스트 제목</h2>
+                    <h2 class="post-title" th:text="${post.title}">포스트 제목</h2>
                 </a>
-                <p th:text="${post.subtitle}">포스트 부제목</p>
-                <p th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd')}">포스트 수정시간</p>
-                <p>❤ <span th:text="${post.likeCount}"></span></p>
+                <p class="post-subtitle" th:text="${post.subtitle}">포스트 부제목</p>
+                <div class="post-meta">
+                    <p th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd')}">포스트 수정시간</p>
+                    <p>❤ <span th:text="${post.likeCount}"></span></p>
+                </div>
             </div>
         </div>
 

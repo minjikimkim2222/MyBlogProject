@@ -1,12 +1,12 @@
 package org.myblog.domain.tag.service;
 
 import lombok.RequiredArgsConstructor;
+import org.myblog.domain.post.domain.Post;
 import org.myblog.domain.tag.domain.Tag;
 import org.myblog.domain.tag.repository.TagRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -53,5 +53,22 @@ public class TagService {
 
     public void deleteByTagName(String tagName){
         tagRepository.deleteByTagName(tagName);
+    }
+
+    // 태그 중복 처리 -- 각각의 태그명 종류(tagName--String)와 개수(Integer) 카운팅
+    public Map<String, Integer> getTagCounts(List<Post> posts){
+        Map<String, Integer> tagCountMap = new HashMap<>();
+
+        for (Post post : posts){
+            for (Tag tag : post.getTags()){
+                tagCountMap.put(tag.getTagName(),
+                        tagCountMap.getOrDefault(tag.getTagName(),0) + 1);
+
+                // Value - tagCountMap.getOrDefault() 부분을 통해, 현재 태그 이름 개수를 1 증가시킨다.
+                //       - 만일, tagCountMap에 해당 태그가 없다면, 기본값 0을 사용해서 1을 더한다.
+            }
+        }
+
+        return tagCountMap;
     }
 }

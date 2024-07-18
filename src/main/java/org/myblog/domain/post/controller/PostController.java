@@ -31,6 +31,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -288,20 +289,18 @@ public class PostController {
         Blog blog = postService.findBlogByUserLoginForm(userLoginForm);
 
         List<Post> posts = blog.getPosts();
+        Map<String, Integer> tagCountMap = tagService.getTagCounts(posts);
 
         model.addAttribute("user", user);
         model.addAttribute("posts", posts);
         model.addAttribute("encodedUsername", encodedUsername);
         model.addAttribute("followerCount", user.getFollowers().size());
         model.addAttribute("followingCount", user.getFollowings().size());
-
-        log.info("user.followers :: {}", user.getFollowers().size());
-        log.info("user.followings :: {}", user.getFollowings().size());
-
-
+        model.addAttribute("tagCountMap", tagCountMap);
 
         return "post/showMyVelog";
     }
+
 
     // 페이징 처리 -- 최신순, 좋아요 정렬
     //fetch(`/posts?page=0&size=10&sort=${sort}`)

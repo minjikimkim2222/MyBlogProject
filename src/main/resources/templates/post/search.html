@@ -90,7 +90,7 @@
             <div class="post-meta">
                 <p th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd')}"></p>
                 <p th:text="${post.username}"></p>
-                <p th:text="${post.likeCount}"></p>
+                <p th:text="'❤ ' + ${post.likeCount}"></p>
             </div>
         </div>
     </div>
