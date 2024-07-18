@@ -109,6 +109,18 @@
         a {
             text-decoration: none;
         }
+
+        <!-- 시리즈용 css 추가 -->
+        .series {
+            background-color: #2e2e2e;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .series:hover {
+            background-color: #3e3e3e;
+        }
     </style>
 </head>
 <body>
@@ -170,6 +182,12 @@
         <!-- 시리즈 섹션 -->
         <div id="series-section" style="display: none;">
             <!-- 시리즈 관련 콘텐츠 -->
+            <div class="series" th:each="series : ${seriesList}">
+                <h2 th:text="${series.seriesName}"
+                    th:href="@{|/myblog/series/${series.id}|}"
+                    onclick="location.href = this.getAttribute('href')")>시리즈 이름</h2>
+                <p th:text="${#lists.size(series.posts)} + '개의 포스트'">0개의 포스트</p>
+            </div>
         </div>
     </div>
 </div>
@@ -184,7 +202,7 @@
         document.getElementById('series-tab').classList.toggle('active', section === 'series');
     }
 
-    // tag 태그명 중복제거를 위해.. -- 자바스크립트 인라인
+
 
 
 

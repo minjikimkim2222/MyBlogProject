@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${series.seriesName}">시리즈</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #181818;
+            color: #FFFFFF;
+            margin: 0;
+            padding: 0;
+        }
+
+        .series-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .series-title {
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #00FF00;
+            display: inline-block;
+        }
+
+        .posts-container {
+            margin-top: 20px;
+        }
+
+        .post-item {
+            margin-bottom: 20px;
+        }
+
+        .post-title {
+            font-size: 1.5em;
+            margin: 0;
+            margin-bottom: 10px;
+        }
+
+        .post-title a {
+            color: white;
+            text-decoration-line: none;
+
+        }
+
+        .post-preview {
+            display: flex;
+            align-items: center;
+        }
+
+        .post-image {
+            max-width: 150px;
+            max-height: 100px;
+            margin-right: 20px;
+            object-fit: cover; /* 이미지 비율 유지하면서 크기 맞추기 */
+        }
+
+        .post-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-subtitle {
+            font-size: 1.2em;
+            margin: 0;
+        }
+
+        .post-date {
+            font-size: 0.9em;
+            color: #AAAAAA;
+        }
+    </style>
+</head>
+<body>
+<div class="series-container">
+    <h1 class="series-title" th:text="${series.seriesName}">시리즈 제목</h1>
+    <div class="posts-container">
+        <div class="post-item" th:each="post, iterStat : ${posts}">
+            <h2 class="post-title">
+                <span th:text="${iterStat.count} + '. '"></span>
+
+                <a th:href="@{'/@' + ${encodedUsername} + '/' + ${post.title}}">
+                    <span th:text="${post.title}">포스트 제목</span>
+                </a>
+
+            </h2>
+            <div class="post-preview">
+                <img class="post-image"
+                     th:src="${post.previewImage != null  ? '/images/' + post.previewImage.storeFileName : '/images/default-previewImage.png'}">
+
+                <div class="post-info">
+                    <p class="post-subtitle" th:text="${post.subtitle}">포스트 부제목</p>
+                    <p class="post-date" th:text="${#temporals.format(post.createdAt, 'yyyy년 MM월 dd일')}">작성일</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

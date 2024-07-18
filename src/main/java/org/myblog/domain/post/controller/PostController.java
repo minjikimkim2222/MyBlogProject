@@ -207,8 +207,9 @@ public class PostController {
             postUpdatedDto2.setStoreFileName(post.getPreviewImage().getStoreFileName()); // -- 이미 storeFile명이 존재한다면, 저장된 파일이미지 띄워야하니깐요
         }
         // post가 시리즈에 속하지 않을수도 있음 !
-        String seriesName = post.getSeries().getSeriesName();
-        if (seriesName != null) {
+
+        if (post.getSeries() != null) {
+            String seriesName = post.getSeries().getSeriesName();
             postUpdatedDto2.setSeriesName(seriesName); // 시리즈가 있어야, 해당 값으로 채워짐..
         }
 
@@ -290,13 +291,15 @@ public class PostController {
 
         List<Post> posts = blog.getPosts();
         Map<String, Integer> tagCountMap = tagService.getTagCounts(posts);
+        List<Series> seriesList = seriesService.getSeriesFromPosts(posts);
 
         model.addAttribute("user", user);
         model.addAttribute("posts", posts);
         model.addAttribute("encodedUsername", encodedUsername);
         model.addAttribute("followerCount", user.getFollowers().size());
         model.addAttribute("followingCount", user.getFollowings().size());
-        model.addAttribute("tagCountMap", tagCountMap);
+        model.addAttribute("tagCountMap", tagCountMap); // 각 태그 종류 - 개수 hashMap
+        model.addAttribute("seriesList", seriesList); // 시리즈 목록
 
         return "post/showMyVelog";
     }

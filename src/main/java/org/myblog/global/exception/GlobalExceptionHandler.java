@@ -2,6 +2,7 @@ package org.myblog.global.exception;
 
 import org.myblog.domain.comment.exception.CommentNotFoundException;
 import org.myblog.domain.post.exception.PostNotFoundException;
+import org.myblog.domain.series.exception.SeriesNotFoundException;
 import org.myblog.domain.user.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,6 +31,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CommentNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleCommentNotFoundException(CommentNotFoundException ex){
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(SeriesNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleSeriesNotFoundException(SeriesNotFoundException ex){
         return ex.getMessage();
     }
 }
