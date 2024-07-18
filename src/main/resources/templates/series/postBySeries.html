@@ -75,8 +75,12 @@
 </head>
 <body>
 <div class="series-container">
-    <h1 class="series-title" th:text="${series.seriesName}">시리즈 제목</h1>
+    <h1 class="series-title" th:text="${series.seriesName}" id="series-title">시리즈 제목</h1>
+    <!-- 시리즈 제목 수정을 위한 input 태그 -->
+    <input type="text" id="series-title-input" style="display:none;" th:value="${series.seriesName}">
 
+    <button id="edit-button" style="margin-left: 10px;">수정</button> <!-- 수정 버튼 -->
+    <button id="apply-button" style="display:none;">적용</button> <!-- 수정 버튼 누르면, 적용 버튼 누를 수 있게 추가 -->
     <button style="margin-left: 30px;" th:onclick="'deleteSeries(' + ${series.id} + ')'">삭제</button>
 
     <div class="posts-container">
@@ -103,6 +107,7 @@
 </div>
 
 <input type="hidden" id="encoded-username" th:value="${encodedUsername}">
+<input type="hidden" id="series-id" th:value="${series.id}">
 
 <script>
     // 시리즈 삭제 버튼
@@ -123,6 +128,47 @@
         } // confirm
     }
 
+    // 시리즈 수정 버튼
+    document.getElementById('edit-button').addEventListener('click', function() {
+        // '수정' 버튼 누르면, 각 버튼 display 어떻게 수정할지
+        document.getElementById('series-title').style.display = 'none';
+        document.getElementById('series-title-input').style.display = 'inline';
+
+        document.getElementById('edit-button').style.display = 'none';
+        document.getElementById('apply-button').style.display = 'inline';
+    });
+
+    // 적용 버튼 누르면.. 이벤트 핸들러
+    document.getElementById('apply-button').addEventListener('click', function() {
+        const seriesId = document.getElementById('series-id').value;
+        const newSeriesName = document.getElementById('series-title-input').value;
+
+        fetch(`/series/${seriesId}/update`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json' // 서버가 JSON 응답을 기대하도록 설정
+            },
+            body: JSON.stringify(
+                { seriesName: newSeriesName } // input 창으로 입력한 SeriesName을 넘겨준다
+            )
+        }).then(response => {
+            if (response.ok) {
+                return response.json(); // JSON 응답을 받아오기 위해 추가
+            } else {
+                throw new Error("시리즈 이름 수정에 실패했습니다.");
+            }
+        }).then(data => {
+            document.getElementById('series-title').textContent = data.newSeriesName;
+
+            document.getElementById('series-title').style.display = 'inline';
+            document.getElementById('series-title-input').style.display = 'none';
+            document.getElementById('edit-button').style.display = 'inline';
+            document.getElementById('apply-button').style.display = 'none';
+        }).catch(error => {
+            alert(error.message);
+        });
+    });
 </script>
 </body>
 </html>

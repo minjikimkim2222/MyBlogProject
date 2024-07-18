@@ -56,4 +56,14 @@ public class SeriesService {
 
         seriesRepository.delete(series); // 시리즈 삭제
     }
+
+    // 시리즈 수정
+    @Transactional
+    public void updateSeriesName(Long seriesId, String seriesName){
+        Series series = seriesRepository.findById(seriesId)
+                .orElseThrow(() -> new SeriesNotFoundException("series not found with seriesId :: " + seriesId));
+        // 하나의 트랜잭션 단위에서 find 했으니까, 영속성 컨텍스트에 담긴 것
+        series.setSeriesName(seriesName);
+        seriesRepository.save(series); // 저장해서, 변경감지로 update !
+    }
 }

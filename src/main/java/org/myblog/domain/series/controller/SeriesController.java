@@ -1,6 +1,6 @@
 package org.myblog.domain.series.controller;
 
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.myblog.domain.post.domain.Post;
 import org.myblog.domain.series.domain.Series;
@@ -11,6 +11,7 @@ import org.myblog.domain.user.domain.User;
 import org.myblog.domain.user.dto.UserLoginForm;
 import org.myblog.domain.user.service.UserService;
 import org.myblog.web.login.SessionConst;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -68,5 +70,39 @@ public class SeriesController {
         seriesService.deleteSeries(seriesId);
 
         return ResponseEntity.ok().build();
+    }
+
+    // /series/${seriesId}/update
+    @PatchMapping("/series/{seriesId}/update")
+    @ResponseBody
+    public ResponseEntity<?> updateSeriesName(@PathVariable Long seriesId,
+                                              @RequestBody UpdateSeriesNameRequestDto updateSeriesNameRequestDto){
+
+        log.info("수정 후 :: seriesNewName :: {}", updateSeriesNameRequestDto.getSeriesName());
+
+        // 시리즈 이름 업데이트 서비스 호출 등 필요한 로직 추가
+        seriesService.updateSeriesName(seriesId, updateSeriesNameRequestDto.getSeriesName());
+
+        UpdateSeriesNameResponseDto updateSeriesNameResponseDto = new UpdateSeriesNameResponseDto(
+                updateSeriesNameRequestDto.getSeriesName()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(updateSeriesNameResponseDto);
+    }
+
+
+    @Getter
+    @NoArgsConstructor
+    static class UpdateSeriesNameRequestDto {
+        private String seriesName;
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Setter @Getter
+    static class UpdateSeriesNameResponseDto {
+        private String newSeriesName;
     }
 }
