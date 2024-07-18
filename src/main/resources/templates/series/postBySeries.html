@@ -76,6 +76,9 @@
 <body>
 <div class="series-container">
     <h1 class="series-title" th:text="${series.seriesName}">시리즈 제목</h1>
+
+    <button style="margin-left: 30px;" th:onclick="'deleteSeries(' + ${series.id} + ')'">삭제</button>
+
     <div class="posts-container">
         <div class="post-item" th:each="post, iterStat : ${posts}">
             <h2 class="post-title">
@@ -98,5 +101,28 @@
         </div>
     </div>
 </div>
+
+<input type="hidden" id="encoded-username" th:value="${encodedUsername}">
+
+<script>
+    // 시리즈 삭제 버튼
+    function deleteSeries(seriesId) {
+        if (confirm("시리즈를 정말 삭제하시겠습니까?\n시리즈 안에 들어있는 포스트들은 삭제되지 않습니다.")) {
+            const encodedUsername = document.getElementById('encoded-username').value;
+
+            fetch(`/series/${seriesId}/delete`, {
+                method: 'DELETE'
+            }).then(response => {
+                if (response.ok) {
+                    alert("시리즈가 삭제되었습니다.");
+                    window.location.href = `/@${encodedUsername}/posts`; // 시리즈 삭제 후 리다이렉트
+                } else {
+                    alert("시리즈 삭제에 실패했습니다.");
+                }
+            }); // fetch
+        } // confirm
+    }
+
+</script>
 </body>
 </html>

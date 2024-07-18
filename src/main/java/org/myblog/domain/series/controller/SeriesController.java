@@ -60,4 +60,13 @@ public class SeriesController {
 
         return "series/postBySeries";
     }
+
+    // /series/${seriesId}/delete
+    @DeleteMapping("/series/{seriesId}/delete")
+    @ResponseBody
+    public ResponseEntity<?> deleteSeries(@PathVariable Long seriesId){
+        seriesService.deleteSeries(seriesId);
+
+        return ResponseEntity.ok().build();
+    }
 }

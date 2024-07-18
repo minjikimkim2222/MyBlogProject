@@ -19,6 +19,6 @@ public class Series {
 
     private String seriesName;
 
-    @OneToMany(mappedBy = "series", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "series")
     private List<Post> posts;
 }

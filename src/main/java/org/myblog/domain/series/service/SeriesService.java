@@ -2,9 +2,12 @@ package org.myblog.domain.series.service;
 
 import lombok.RequiredArgsConstructor;
 import org.myblog.domain.post.domain.Post;
+import org.myblog.domain.post.repository.PostRepository;
 import org.myblog.domain.series.domain.Series;
+import org.myblog.domain.series.exception.SeriesNotFoundException;
 import org.myblog.domain.series.repository.SeriesRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -14,6 +17,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SeriesService {
     private final SeriesRepository seriesRepository;
+    private final PostRepository postRepository;
 
     public List<Series> findAllSeries(){
         return seriesRepository.findAll();
@@ -36,5 +40,20 @@ public class SeriesService {
                 .distinct() // 중복 제거
                 .collect(Collectors.toList());
 
+    }
+
+    // 시리즈 삭제 (단, 시리즈에 해당된 post글은 삭제 X) -- cascade all 주의
+    @Transactional
+    public void deleteSeries(Long seriesId) {
+        Series series = seriesRepository.findById(seriesId)
+                .orElseThrow(() -> new SeriesNotFoundException("Series not found with id :: " + seriesId));
+
+        List<Post> posts = series.getPosts();
+        for (Post post : posts) {
+            post.setSeries(null);
+            postRepository.save(post); // 변경사항 저장
+        }
+
+        seriesRepository.delete(series); // 시리즈 삭제
     }
 }
