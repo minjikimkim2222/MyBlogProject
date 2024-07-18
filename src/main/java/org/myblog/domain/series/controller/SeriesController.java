@@ -41,7 +41,7 @@ public class SeriesController {
         return ResponseEntity.ok(tagNameList);
     }
 
-    // th:href="@{|/myblog/series/${series.seriesName}|}"
+    // th:href="@{|/myblog/series/${series.seriesId}|}"
     @GetMapping("/myblog/series/{seriesId}")
     public String showPostBySeries(
             @PathVariable Long seriesId, Model model,

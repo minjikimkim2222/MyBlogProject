@@ -121,6 +121,11 @@
         .series:hover {
             background-color: #3e3e3e;
         }
+
+        /* 추가된 스타일 */
+        .tag-list a.active {
+            color: #00FF00;
+        }
     </style>
 </head>
 <body>
@@ -151,10 +156,19 @@
         <div class="tags">
             <h3>태그 목록</h3>
             <ul class="tag-list">
+                <!-- 전체보기 추가 -->
+                <li>
+                    <a th:href="@{'/@' + ${encodedUsername} + '/posts'}"
+                       th:classappend="${selectedTag == null} ? 'active'">
+                        전체보기 (<span th:text="${totalPostCount}">0</span>)
+                    </a>
+                </li>
+                <!-- 각 태그 항목 -->
                 <li th:each="tagEntry : ${tagCountMap}">
-                    <a th:href="@{/tags/{tag} (tag=${tagEntry.key})}">
+                    <a th:href="@{'/@' + ${encodedUsername} + '/posts?tag=' + ${tagEntry.key}}"
+                       th:classappend="${selectedTag == tagEntry.key} ? 'active'"> <!-- 선택되었으면, 초록불 !!-->
                         <span th:text="${tagEntry.key}">Tag Name</span>
-                        (<span th:text="${tagEntry.value}">0</span>)
+                        (<span th:text="${tagEntry.value}">Tag count</span>)
                     </a>
                 </li>
             </ul>

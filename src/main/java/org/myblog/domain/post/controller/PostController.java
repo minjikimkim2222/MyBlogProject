@@ -283,7 +283,9 @@ public class PostController {
 
     // 내 벨로그 화면
     @GetMapping("/@{encodedUsername}/posts")
-    public String showMyVelogPage(@PathVariable String encodedUsername, Model model,
+    public String showMyVelogPage(@PathVariable String encodedUsername,
+                                  @RequestParam(required = false) String tag,
+                                  Model model,
                                   @SessionAttribute(name = SessionConst.User_Login_Form, required = false)UserLoginForm userLoginForm){
 
         User user = userService.findByName(encodedUsername);
@@ -293,6 +295,21 @@ public class PostController {
         Map<String, Integer> tagCountMap = tagService.getTagCounts(posts);
         List<Series> seriesList = seriesService.getSeriesFromPosts(posts);
 
+        // 전체 포스트 개수 추가
+        int totalPostCount = posts.size(); // -- 필터링 전, 전체 포스트 개수
+
+        // 태그 필터링 -- requestparam으로 태그값이 있다면, 여기서 posts가 다시 초기화되서 필터링됨 !!!
+        if (tag != null && !tag.isEmpty()) {
+            posts = posts.stream()
+                    .filter(post -> post
+                                    .getTags()
+                                    .stream()
+                                    .anyMatch(t -> t.getTagName().equals(tag)))
+                    .collect(Collectors.toList());
+
+            model.addAttribute("selectedTag", tag); // 선택된 태그
+        }
+
         model.addAttribute("user", user);
         model.addAttribute("posts", posts);
         model.addAttribute("encodedUsername", encodedUsername);
@@ -300,6 +317,8 @@ public class PostController {
         model.addAttribute("followingCount", user.getFollowings().size());
         model.addAttribute("tagCountMap", tagCountMap); // 각 태그 종류 - 개수 hashMap
         model.addAttribute("seriesList", seriesList); // 시리즈 목록
+        model.addAttribute("totalPostCount", totalPostCount); // 전체 포스트 개수
+
 
         return "post/showMyVelog";
     }
