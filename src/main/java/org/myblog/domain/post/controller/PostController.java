@@ -80,6 +80,8 @@ public class PostController {
     // postId로 2차 저장 폼 요청해야 됨 !! -- 여기서 Post 엔디티 값이 채워졌는지 체크
     @GetMapping("/writeform/next/step/{postId}")
     public String writeFormNextStep(@PathVariable Long postId, Model model){
+        Post post = postService.findById(postId);
+
         PostCreatedDto2 postCreatedDto2 = new PostCreatedDto2();
         postCreatedDto2.setVisibility(true); // 기본값 설정 (전체공개)
         postCreatedDto2.setPostId(postId); // -- 히든변수로 설정해서 값 변경 불가하게끔 !!
@@ -292,13 +294,15 @@ public class PostController {
         Blog blog = postService.findBlogByUserLoginForm(userLoginForm);
 
         List<Post> posts = blog.getPosts();
+
         Map<String, Integer> tagCountMap = tagService.getTagCounts(posts);
         List<Series> seriesList = seriesService.getSeriesFromPosts(posts);
 
-        // 전체 포스트 개수 추가
-        int totalPostCount = posts.size(); // -- 필터링 전, 전체 포스트 개수
+        // 전체 포스트 개수 추가 (필터링 전, 전체 포스트 개수)
+        int totalPostCount = posts.size();
 
         // 태그 필터링 -- requestparam으로 태그값이 있다면, 여기서 posts가 다시 초기화되서 필터링됨 !!!
+
         if (tag != null && !tag.isEmpty()) {
             posts = posts.stream()
                     .filter(post -> post
